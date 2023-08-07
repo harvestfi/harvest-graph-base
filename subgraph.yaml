@@ -6,8 +6,8 @@ dataSources:
     name: Controller
     network: base
     source:
-      address: "0x6fbfcf88db1aada31f34215b2a1df7fafb4883e9"
-      startBlock: 2140821
+      address: "0xf90ff0f7c8db52bf1bf869f74226ead125efa745"
+      startBlock: 1441078
       abi: ControllerContract
     mapping:
       kind: ethereum/events
