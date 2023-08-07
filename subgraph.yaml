@@ -1,0 +1,150 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Controller
+    network: base
+    source:
+      address: "0x6fbfcf88db1aada31f34215b2a1df7fafb4883e9"
+      startBlock: 2140821
+      abi: ControllerContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+        - Strategy
+      abis:
+        - name: ControllerContract
+          file: ./abis/harvest/Controller.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+      eventHandlers:
+        - event: SharePriceChangeLog(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleSharePriceChangeLog
+      file: ./src/ControllerListener.ts
+templates:
+  - kind: ethereum/contract
+    name: VaultListener
+    network: base
+    source:
+      abi: VaultContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+      abis:
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Invest(uint256)
+          handler: handleInvest
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+      file: ./src/VaultListener.ts
+  - kind: ethereum/contract
+    name: PotPoolListener
+    network: base
+    source:
+      abi: PotPoolContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+      abis:
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+      eventHandlers:
+        - event: RewardAdded(address,uint256)
+          handler: handleRewardAdded
+      file: ./src/PotPoolListener.ts
+  - kind: ethereum/contract
+    name: StrategyListener
+    network: base
+    source:
+      abi: StrategyBaseContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Strategy
+      abis:
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+      eventHandlers:
+        - event: ProfitLogInReward(indexed address,uint256,uint256,uint256)
+          handler: handleProfitLogInReward
+      file: ./src/StrategyListener.ts
