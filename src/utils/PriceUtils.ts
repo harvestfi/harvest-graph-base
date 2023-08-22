@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   BASE_SWAP_FACTORY,
   BD_18,
@@ -27,6 +27,7 @@ import {
 } from './PlatformUtils';
 import { PancakeFactoryContract } from '../../generated/Controller/PancakeFactoryContract';
 import { PancakePairContract } from '../../generated/Controller/PancakePairContract';
+import { createPriceFeed } from '../types/PriceFeed';
 
 export function getPriceForCoin(address: Address): BigInt {
   return  getPriceForCoinWithSwap(address, USDC_BASE, BASE_SWAP_FACTORY)
@@ -59,15 +60,18 @@ function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory:
   return reserves.get_reserve1().times(delimiter).div(reserves.get_reserve0())
 }
 
-export function getPriceByVault(vault: Vault): BigDecimal {
+export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal {
 
   if (isPsAddress(vault.id)) {
-    return getPriceForCoin(getFarmToken()).divDecimal(BD_18)
+    const tempPrice = getPriceForCoin(getFarmToken()).divDecimal(BD_18);
+    createPriceFeed(vault, tempPrice, block);
+    return tempPrice;
   }
   const underlyingAddress = vault.underlying
 
   let price = getPriceForCoin(Address.fromString(underlyingAddress))
   if (!price.isZero()) {
+    createPriceFeed(vault, price.divDecimal(BD_18), block);
     return price.divDecimal(BD_18)
   }
 
@@ -76,12 +80,17 @@ export function getPriceByVault(vault: Vault): BigDecimal {
     if (isLpUniPair(underlying.name)) {
       const tempPrice = getPriceForCoin(Address.fromString(underlyingAddress))
       if (tempPrice.gt(DEFAULT_PRICE)) {
+        createPriceFeed(vault, tempPrice.divDecimal(BD_18), block);
         return tempPrice.divDecimal(BD_18)
       }
-      return getPriceLpUniPair(underlying.id)
+      const tempInPrice = getPriceLpUniPair(underlying.id);
+      createPriceFeed(vault, tempInPrice, block);
+      return tempInPrice
     }
 
     if (isBalancer(underlying.name)) {
+      const tempPrice = getPriceForBalancer(underlying.id);
+      createPriceFeed(vault, tempPrice, block);
       return getPriceForBalancer(underlying.id)
     }
   }

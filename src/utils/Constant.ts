@@ -118,6 +118,7 @@ export const LP_UNI_PAIR_CONTRACT_NAME = [
   'ApeSwapFinance'.toLowerCase(),
   'Volatile AMM'.toLowerCase(),
   'Stable AMM'.toLowerCase(),
+  'BaseSwap'.toLowerCase()
 ]
 export const BALANCER_CONTRACT_NAME = [
   'Balancer'.toLowerCase(),
