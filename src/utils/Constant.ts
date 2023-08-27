@@ -165,7 +165,7 @@ export function isStableCoin(address: string): boolean {
     return STABLE_COIN_ARRAY_MATIC.join(' ').includes(address) == true
   } else if (dataSource.network() == 'arbitrum-one') {
     return STABLE_COIN_ARRAY_ARBITRUM.join(' ').includes(address) == true
-  } else if (dataSource.network() == 'matic') {
+  } else if (dataSource.network() == 'base') {
     return STABLE_COIN_ARRAY_BASE.join(' ').includes(address) == true;
   }
   return false
