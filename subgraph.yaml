@@ -20,7 +20,7 @@ dataSources:
         - name: ControllerContract
           file: ./abis/harvest/Controller.json
         - name: VaultContract
-          file: ./abis/Vault.json
+          file: ./abis/VaultV2.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: WeightedPool2TokensContract
@@ -37,6 +37,14 @@ dataSources:
           file: ./abis/baseswap/PancakeFactory.json
         - name: PancakePairContract
           file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
       eventHandlers:
         - event: SharePriceChangeLog(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleSharePriceChangeLog
@@ -55,7 +63,7 @@ templates:
         - Vault
       abis:
         - name: VaultContract
-          file: ./abis/Vault.json
+          file: ./abis/VaultV2.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: WeightedPool2TokensContract
@@ -72,6 +80,14 @@ templates:
           file: ./abis/baseswap/PancakeFactory.json
         - name: PancakePairContract
           file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -79,6 +95,10 @@ templates:
           handler: handleInvest
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
+        - event: Deposit(indexed address,indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleWithdraw
       file: ./src/VaultListener.ts
   - kind: ethereum/contract
     name: PotPoolListener
@@ -93,7 +113,7 @@ templates:
         - Pool
       abis:
         - name: VaultContract
-          file: ./abis/Vault.json
+          file: ./abis/VaultV2.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: WeightedPool2TokensContract
@@ -110,9 +130,19 @@ templates:
           file: ./abis/baseswap/PancakeFactory.json
         - name: PancakePairContract
           file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
       eventHandlers:
         - event: RewardAdded(address,uint256)
           handler: handleRewardAdded
+        - event: RewardPaid(indexed address,address,uint256)
+          handler: handleRewardPaid
       file: ./src/PotPoolListener.ts
   - kind: ethereum/contract
     name: StrategyListener
@@ -127,7 +157,7 @@ templates:
         - Strategy
       abis:
         - name: VaultContract
-          file: ./abis/Vault.json
+          file: ./abis/VaultV2.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: WeightedPool2TokensContract
@@ -144,6 +174,14 @@ templates:
           file: ./abis/baseswap/PancakeFactory.json
         - name: PancakePairContract
           file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
       eventHandlers:
         - event: ProfitLogInReward(indexed address,uint256,uint256,uint256)
           handler: handleProfitLogInReward

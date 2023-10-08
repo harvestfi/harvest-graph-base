@@ -3,7 +3,7 @@ import {
   BALANCER_CONTRACT_NAME, CAMELOT_CONTRACT,
   CURVE_CONTRACT_NAME,
   F_UNI_V3_CONTRACT_NAME,
-  LP_UNI_PAIR_CONTRACT_NAME, MESH_SWAP_CONTRACT, POISON_FINANCE_CONTRACT, WETH_LIST,
+  LP_UNI_PAIR_CONTRACT_NAME, MESH_SWAP_CONTRACT, POISON_FINANCE_CONTRACT, WETH_LIST, WETH_LIST_BASE,
 } from './Constant';
 import { WeightedPool2TokensContract } from '../../generated/Controller/WeightedPool2TokensContract';
 import { Address } from '@graphprotocol/graph-ts';
@@ -27,10 +27,11 @@ export function isBalancer(name: string): boolean {
 }
 
 export function isCurve(name: string): boolean {
-  if (name.toLowerCase().startsWith(CURVE_CONTRACT_NAME)) {
-    return true
+  for (let i=0;i<CURVE_CONTRACT_NAME.length;i++) {
+    if (name.toLowerCase().startsWith(CURVE_CONTRACT_NAME[i])) {
+      return true
+    }
   }
-
   return false
 }
 
@@ -65,8 +66,8 @@ export function checkBalancer(address: Address): boolean {
 }
 
 export function isWeth(address: Address): boolean {
-  for (let i=0;i<WETH_LIST.length;i++) {
-    if (address.equals(WETH_LIST[i])) {
+  for (let i=0;i<WETH_LIST_BASE.length;i++) {
+    if (address.equals(WETH_LIST_BASE[i])) {
       return true
     }
   }

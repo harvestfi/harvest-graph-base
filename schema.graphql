@@ -24,7 +24,9 @@ type Vault @entity {
   apyReward: BigDecimal!
   apyAutoCompound: BigDecimal!
   lastShareTimestamp: BigInt!
+  lastUsersShareTimestamp: BigInt!
   lastSharePrice: BigInt!
+  users: [String!]!
   skipFirstApyReward: Boolean
 }
 

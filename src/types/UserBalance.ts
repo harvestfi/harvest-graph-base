@@ -42,6 +42,8 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
       : 'Withdraw'
     userBalanceHistory.value = userBalance.value
 
+    updateVaultUsers(vault, value, beneficary.toHex());
+
     userBalanceHistory.sharePrice = vaultContract.getPricePerFullShare()
     userBalanceHistory.save()
 
@@ -57,4 +59,31 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
     userTransaction.value = amount
     userTransaction.save()
   }
+}
+
+function updateVaultUsers(vault: Vault, value: BigDecimal, userAddress: string): void {
+  let users = vault.users;
+  if (value.equals(BigDecimal.zero())) {
+    let newUsers: string[] = [];
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].toLowerCase() != userAddress.toLowerCase()) {
+        newUsers.push(users[i])
+      }
+    }
+    users = newUsers;
+  } else {
+    let hasUser = false;
+    for (let i = 0; i < users.length; i++) {
+      if (userAddress.toLowerCase() == users[i].toLowerCase()) {
+        hasUser = true;
+        break;
+      }
+    }
+
+    if (!hasUser) {
+      users.push(userAddress)
+    }
+  }
+  vault.users = users;
+  vault.save()
 }

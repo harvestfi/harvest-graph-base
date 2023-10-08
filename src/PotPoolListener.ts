@@ -3,6 +3,7 @@ import { saveReward } from "./types/Reward";
 import { log } from "@graphprotocol/graph-ts";
 import { saveApyReward } from "./types/Apy";
 import { RewardAdded } from "../generated/templates/VaultListener/PotPoolContract";
+import { RewardPaid } from '../generated/Controller/PotPoolContract';
 
 export function handleRewardAdded(event: RewardAdded): void {
   const poolAddress = event.address
@@ -27,4 +28,8 @@ export function handleRewardAdded(event: RewardAdded): void {
 
   saveReward(poolAddress, tryRewardToken.value, tryRewardRate.value, tryPeriodFinish.value, rewardAmount, event.transaction, event.block)
   saveApyReward(poolAddress, tryRewardToken.value, tryRewardRate.value, tryPeriodFinish.value, event.transaction, event.block)
+}
+
+export function handleRewardPaid(event: RewardPaid): void {
+
 }

@@ -42,3 +42,8 @@ export function fetchContractTotalSupply(address: Address): BigInt {
   }
   return totalSupply
 }
+
+export function _balanceOf(contract: Address, owner: Address): BigInt {
+  const tBalance = ERC20.bind(contract).try_balanceOf(owner);
+  return tBalance.reverted ? BigInt.zero() : tBalance.value;
+}

@@ -3,6 +3,8 @@ import { pow } from "./MathUtils";
 
 export const UNKNOWN = 'unknown';
 
+export const TWO_WEEKS_IN_SECONDS = BigInt.fromString('1209600');
+
 export const UNISWAP_V3_VALUE = pow(pow(BigDecimal.fromString('2'), 96), 2)
 export const SECONDS_OF_YEAR = BigDecimal.fromString('31557600');
 export const DEFAULT_DECIMAL = 18;
@@ -27,6 +29,7 @@ export const MODULE_RESULT = 75600;
 export const MODULE_RESULT_V2 = 518400;
 export const CONST_ID = '1';
 
+export const WETH_BASE = Address.fromString('0x4200000000000000000000000000000000000006');
 export const USDC_BASE = Address.fromString('0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA');
 export const WA_WETH = Address.fromString('0x18C100415988bEF4354EfFAd1188d1c22041B046');
 export const ST_ETH_A_ETH = Address.fromString('0x5a7f39435fd9c381e4932fa2047c9a5136a5e3e7');
@@ -37,6 +40,16 @@ export const WETH_LIST = [
   WA_WETH,
   R_ETH_A_ETH
 ];
+
+
+export const CB_ETH_ETH_POOL = '0x4c8d67201dced0a8e44f59d419cb74665b4cde55'.toLowerCase();
+export const XBSX = '0xE4750593d1fC8E74b31549212899A72162f315Fa'.toLowerCase();
+export const BSX = Address.fromString('0xd5046b976188eb40f6de40fb527f89c05b323385');
+
+export const WETH_LIST_BASE = [
+  // cbETH
+  Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22')
+]
 export const STABLE_COIN_ARRAY_MAINNET = [
   '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'.toLowerCase(),
   '0xe9e7cea3dedca5984780bafc599bd69add087d56'.toLowerCase(),
@@ -90,6 +103,13 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA'.toLowerCase(),
   '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb'.toLowerCase(),
   '0xEB466342C4d449BC9f53A865D5Cb90586f405215'.toLowerCase(),
+  // crvUSD
+  '0x417Ac0e078398C154EdFadD9Ef675d30Be60Af93'.toLowerCase(),
+  // USDC, USDBc, axlUSDC, crvUSD stable pool
+  '0x492A07E2f2BD6a85597052f6497aC830DA0a5f63'.toLowerCase(),
+  '0x9483ab65847a447e36d21af1cab8c87e9712ff93'.toLowerCase(),
+  // DOLA
+  '0x4621b7a9c75199271f773ebd9a499dbd165c3191'.toLowerCase(),
 ]
 
 export const PS_ADDRESSES_MAINNET = [
@@ -127,8 +147,13 @@ export const BALANCER_CONTRACT_NAME = [
   '50tBTC-50WETH'.toLowerCase(),
   '80PAL-20OHM'.toLowerCase(),
   'AuraBal'.toLowerCase(),
+  '50WETH-50GOLD'.toLowerCase()
 ]
-export const CURVE_CONTRACT_NAME = 'Curve.fi'.toLowerCase()
+export const CURVE_CONTRACT_NAME = [
+  'Curve.fi'.toLowerCase(),
+  'tricrypto'.toLowerCase()
+]
+
 export const F_UNI_V3_CONTRACT_NAME = 'fUniV3'.toLowerCase()
 export const MESH_SWAP_CONTRACT = 'Meshswap'.toLowerCase()
 export const POISON_FINANCE_CONTRACT = 'Poison.Finance Poison Ivy'.toLowerCase();
@@ -144,6 +169,7 @@ export const UNISWAP_V3_FEES = [
 
 
 export const BASE_SWAP_FACTORY = Address.fromString('0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB');
+export const AERODROME_SWAP_FACTORY = Address.fromString('0x420dd381b31aef6683db6b902084cb0ffece40da');
 
 export const FARM_TOKEN_MAINNET = Address.fromString('0xa0246c9032bc3a600820415ae600c6388619a14d')
 export const FARM_TOKEN_MATIC = Address.fromString('0xab0b2ddb9c7e440fac8e140a89c0dbcbf2d7bbff')

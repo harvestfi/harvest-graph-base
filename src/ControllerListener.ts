@@ -8,12 +8,13 @@ import {
   EVERY_24_HOURS,
   EVERY_7_DAYS,
   MODULE_RESULT,
-  MODULE_RESULT_V2,
+  MODULE_RESULT_V2, TWO_WEEKS_IN_SECONDS,
 } from './utils/Constant';
 import { SharePriceChangeLog } from "../generated/Controller/ControllerContract";
-import { Address, BigDecimal, ethereum } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { calculateAndSaveApyAutoCompound } from "./types/Apy";
 import { createTotalTvl, getTvlUtils } from './types/TotalTvlUtils';
+import { createUserBalance } from './types/UserBalance';
 
 
 export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
@@ -43,6 +44,15 @@ export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
     }
     vault.lastShareTimestamp = sharePrice.timestamp
     vault.lastSharePrice = sharePrice.newSharePrice
+
+
+    if (vault.lastUsersShareTimestamp.plus(TWO_WEEKS_IN_SECONDS).lt(event.block.timestamp)) {
+      const users = vault.users
+      for (let i = 0; i < users.length; i++) {
+        createUserBalance(event.params.vault, BigInt.zero(), Address.fromString(users[i]), event.transaction, event.block, false);
+      }
+      vault.lastUsersShareTimestamp = event.block.timestamp
+    }
     vault.save()
 
   }

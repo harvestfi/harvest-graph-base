@@ -1,18 +1,19 @@
 import { Address, BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
+  AERODROME_SWAP_FACTORY,
   BASE_SWAP_FACTORY,
   BD_18,
   BD_ONE,
   BD_TEN, BD_ZERO,
   BI_18,
-  BI_TEN,
+  BI_TEN, BSX, CB_ETH_ETH_POOL,
   DEFAULT_DECIMAL,
   DEFAULT_PRICE,
   getFarmToken,
   isPsAddress,
   isStableCoin,
   USDC_BASE,
-  USDC_DECIMAL,
+  USDC_DECIMAL, WETH_BASE, XBSX,
 } from './Constant';
 import { Token, Vault } from "../../generated/schema";
 import { WeightedPool2TokensContract } from "../../generated/templates/VaultListener/WeightedPool2TokensContract";
@@ -22,15 +23,53 @@ import { fetchContractDecimal } from "./ERC20Utils";
 import { pow, powBI } from "./MathUtils";
 import {
   checkBalancer,
-  isBalancer,
-  isLpUniPair,
+  isBalancer, isCurve,
+  isLpUniPair, isWeth,
 } from './PlatformUtils';
 import { PancakeFactoryContract } from '../../generated/Controller/PancakeFactoryContract';
 import { PancakePairContract } from '../../generated/Controller/PancakePairContract';
 import { createPriceFeed } from '../types/PriceFeed';
+import { AedromeFactoryContract } from '../../generated/Controller/AedromeFactoryContract';
+import { AedromePoolContract } from '../../generated/Controller/AedromePoolContract';
+import { CurveVaultContract } from '../../generated/Controller/CurveVaultContract';
+import { CurveMinterContract } from '../../generated/Controller/CurveMinterContract';
 
 export function getPriceForCoin(address: Address): BigInt {
-  return  getPriceForCoinWithSwap(address, USDC_BASE, BASE_SWAP_FACTORY)
+
+  let tokenAddress = address;
+
+  if (isWeth(address)) {
+    tokenAddress = WETH_BASE
+  }
+  let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
+  if (price.gt(BigInt.zero())) {
+    return price;
+  }
+
+  price = getPriceForAerodrome(WETH_BASE, tokenAddress, AERODROME_SWAP_FACTORY)
+  if (price.equals(BigInt.zero())) {
+    return price;
+  }
+
+  const wethPrice = getPriceForCoinWithSwap(WETH_BASE, USDC_BASE, BASE_SWAP_FACTORY)
+
+  return price.times(wethPrice).div(BI_18);
+}
+
+function getPriceForAerodrome(tokenA: Address, tokenB: Address, factoryAddress: Address): BigInt {
+  const factory = AedromeFactoryContract.bind(factoryAddress);
+  const tryGetPool = factory.try_getPool1(tokenA, tokenB, false);
+  if (tryGetPool.reverted) {
+    return BigInt.zero();
+  }
+  const pool = AedromePoolContract.bind(tryGetPool.value);
+
+  const tryPrices = pool.try_prices(tokenB, BI_18, BigInt.fromString('1'));
+
+  if (tryPrices.reverted) {
+    return BigInt.zero();
+  }
+  return tryPrices.value[0];
 }
 
 function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory: Address): BigInt {
@@ -67,7 +106,21 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
     createPriceFeed(vault, tempPrice, block);
     return tempPrice;
   }
+
   const underlyingAddress = vault.underlying
+
+  if (CB_ETH_ETH_POOL == vault.id) {
+    const tempPrice = getPriceForCoin(WETH_BASE).times(BI_TEN).divDecimal(BD_18);
+    createPriceFeed(vault, tempPrice, block);
+    return tempPrice;
+  }
+
+  if (XBSX == underlyingAddress) {
+    const tempPrice = getPriceForCoin(BSX).divDecimal(BD_18);
+    createPriceFeed(vault, tempPrice, block);
+    return tempPrice;
+  }
+
 
   let price = getPriceForCoin(Address.fromString(underlyingAddress))
   if (!price.isZero()) {
@@ -91,12 +144,17 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
     if (isBalancer(underlying.name)) {
       const tempPrice = getPriceForBalancer(underlying.id);
       createPriceFeed(vault, tempPrice, block);
-      return getPriceForBalancer(underlying.id)
+      return tempPrice
+    }
+
+    if (isCurve(underlying.name)) {
+      const tempPrice = getPriceForCurve(underlying.id)
+      createPriceFeed(vault, tempPrice, block);
+      return tempPrice;
     }
   }
 
   return BigDecimal.zero()
-
 }
 
 export function getPriceLpUniPair(underlyingAddress: string): BigDecimal {
@@ -180,6 +238,65 @@ export function toBigInt(value: BigDecimal): BigInt {
   }
   return BigInt.fromString(val[0])
 }
+
+
+export function getPriceForCurve(underlyingAddress: string): BigDecimal {
+  const curveContract = CurveVaultContract.bind(Address.fromString(underlyingAddress))
+  const tryMinter = curveContract.try_minter()
+
+  let minter = CurveMinterContract.bind(Address.fromString(underlyingAddress))
+  if (!tryMinter.reverted) {
+    minter = CurveMinterContract.bind(tryMinter.value)
+  }
+
+  let index = 0
+  let tryCoins = minter.try_coins(BigInt.fromI32(index))
+  while (!tryCoins.reverted) {
+    const coin = tryCoins.value
+    if (coin.equals(Address.zero())) {
+      index = index - 1
+      break
+    }
+    index = index + 1
+    tryCoins = minter.try_coins(BigInt.fromI32(index))
+  }
+  const tryDecimals = curveContract.try_decimals()
+  let decimal = DEFAULT_DECIMAL
+  if (!tryDecimals.reverted) {
+    decimal = tryDecimals.value.toI32()
+  } else {
+    log.log(log.Level.WARNING, `Can not get decimals for ${underlyingAddress}`)
+  }
+  const size = index + 1
+  if (size < 1) {
+    return BigDecimal.zero()
+  }
+
+  let value = BigDecimal.zero()
+
+  for (let i=0;i<size;i++) {
+    const index = BigInt.fromI32(i)
+    const tryCoins1 = minter.try_coins(index)
+    if (tryCoins1.reverted) {
+      break
+    }
+    const token = tryCoins1.value
+    const tokenPrice = getPriceForCoin(token).divDecimal(BD_18)
+    const balance = minter.balances(index)
+    const tryDecimalsTemp = ERC20.bind(token).try_decimals()
+    let decimalsTemp = DEFAULT_DECIMAL
+    if (!tryDecimalsTemp.reverted) {
+      decimalsTemp = tryDecimalsTemp.value
+    } else {
+      log.log(log.Level.WARNING, `Can not get decimals for ${token}`)
+    }
+    const tempBalance = balance.toBigDecimal().div(pow(BD_TEN, decimalsTemp))
+
+    value = value.plus(tokenPrice.times(tempBalance))
+  }
+  return value.times(BD_18).div(curveContract.totalSupply().toBigDecimal())
+}
+
 
 function normalizePrecision(amount: BigInt, decimal: BigInt): BigInt {
   return amount.div(BI_18.div(BigInt.fromI64(10 ** decimal.toI64())))
