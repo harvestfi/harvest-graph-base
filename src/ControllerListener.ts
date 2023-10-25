@@ -13,7 +13,6 @@ import {
 import { SharePriceChangeLog } from "../generated/Controller/ControllerContract";
 import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { calculateAndSaveApyAutoCompound } from "./types/Apy";
-import { createTotalTvl, getTvlUtils } from './types/TotalTvlUtils';
 import { createUserBalance } from './types/UserBalance';
 
 
