@@ -48,7 +48,9 @@ export const BSX = Address.fromString('0xd5046b976188eb40f6de40fb527f89c05b32338
 
 export const WETH_LIST_BASE = [
   // cbETH
-  Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22')
+  Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22'),
+  // rETH
+  Address.fromString('0xB6fe221Fe9EeF5aBa221c348bA20A1Bf5e73624c')
 ]
 export const STABLE_COIN_ARRAY_MAINNET = [
   '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'.toLowerCase(),

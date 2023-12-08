@@ -13,9 +13,9 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
     let poolBalance = BigDecimal.zero()
     if (vault.pool != null) {
       const poolContract = ERC20.bind(Address.fromString(vault.pool!))
-      poolBalance = poolContract.balanceOf(beneficary).divDecimal(pow(BD_TEN, vault.decimal.toI32())).times(sharePrice)
+      poolBalance = poolContract.balanceOf(beneficary).divDecimal(pow(BD_TEN, vault.decimal.toI32()))
     }
-    const vaultBalance = vaultContract.balanceOf(beneficary).divDecimal(pow(BD_TEN, vault.decimal.toI32())).times(sharePrice)
+    const vaultBalance = vaultContract.balanceOf(beneficary).divDecimal(pow(BD_TEN, vault.decimal.toI32()))
     const value = vaultBalance.plus(poolBalance)
 
     const userBalanceId = `${vault.id}-${beneficary.toHex()}`

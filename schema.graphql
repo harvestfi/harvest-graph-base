@@ -31,6 +31,16 @@ type Vault @entity {
   skipFirstApyReward: Boolean
 }
 
+type VaultHistory @entity {
+  "tx + vault address"
+  id: ID!
+  vault: Vault!
+
+  priceUnderlying: BigDecimal!
+  sharePrice: BigInt!
+  timestamp: BigInt!
+}
+
 type Strategy @entity {
   "strategy address"
   id: ID!
