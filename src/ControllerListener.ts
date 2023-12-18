@@ -1,5 +1,5 @@
-import { SharePrice, Strategy, Vault, VaultHistory } from '../generated/schema';
-import { loadOrCreateVault } from "./types/Vault";
+import { PriceHistory, SharePrice, Strategy, Vault, VaultHistory } from '../generated/schema';
+import { getVaultUtils, loadOrCreateVault } from './types/Vault';
 import { pow, powBI } from "./utils/MathUtils";
 import {
   BD_TEN,
@@ -14,6 +14,7 @@ import { SharePriceChangeLog } from "../generated/Controller/ControllerContract"
 import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { calculateAndSaveApyAutoCompound } from "./types/Apy";
 import { createUserBalance } from './types/UserBalance';
+import { getPriceByVault } from './utils/PriceUtils';
 
 
 export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
@@ -62,10 +63,32 @@ export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
       vaultHistory = new VaultHistory(vaultHistoryId);
       vaultHistory.vault = vault.id;
       vaultHistory.sharePrice = vault.lastSharePrice;
+      vaultHistory.sharePriceDec = vault.lastSharePrice.divDecimal(pow(BD_TEN, vault.decimal.toI32()))
       vaultHistory.priceUnderlying = vault.priceUnderlying;
       vaultHistory.timestamp = event.block.timestamp;
       vaultHistory.save();
     }
+  }
+}
 
+export function handleBlock(block: ethereum.Block): void {
+  const vaultUtils = getVaultUtils();
+  for (let i = 0; i < vaultUtils.vaults.length; i++) {
+    const vault = loadOrCreateVault(Address.fromString(vaultUtils.vaults[i]), block);
+    const price = getPriceByVault(vault, block);
+
+    const priceHistoryId = `${vault.id}-${block.number.toString()}`
+    let priceHistory = PriceHistory.load(priceHistoryId)
+    if (!priceHistory) {
+      priceHistory = new PriceHistory(priceHistoryId);
+      priceHistory.vault = vault.id
+      priceHistory.price = price;
+      priceHistory.createAtBlock = block.number
+      priceHistory.timestamp = block.timestamp
+      priceHistory.save();
+    }
+
+    vault.priceUnderlying = price
+    vault.save();
   }
 }
