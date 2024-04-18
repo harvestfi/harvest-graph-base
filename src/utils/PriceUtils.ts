@@ -11,7 +11,7 @@ import {
   DEFAULT_PRICE,
   getFarmToken,
   isPsAddress,
-  isStableCoin,
+  isStableCoin, OVN_USD_PLUS_BASE_POOL,
   USDC_BASE,
   USDC_DECIMAL, WETH_BASE, XBSX,
 } from './Constant';
@@ -136,7 +136,10 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
         createPriceFeed(vault, tempPrice.divDecimal(BD_18), block);
         return tempPrice.divDecimal(BD_18)
       }
-      const tempInPrice = getPriceLpUniPair(underlying.id);
+      let tempInPrice = getPriceLpUniPair(underlying.id);
+      if (underlying.id == OVN_USD_PLUS_BASE_POOL) {
+        tempInPrice = tempInPrice.times(BigDecimal.fromString('2'));
+      }
       createPriceFeed(vault, tempInPrice, block);
       return tempInPrice
     }

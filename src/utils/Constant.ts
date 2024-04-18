@@ -46,6 +46,8 @@ export const CB_ETH_ETH_POOL = '0x4c8d67201dced0a8e44f59d419cb74665b4cde55'.toLo
 export const XBSX = '0xE4750593d1fC8E74b31549212899A72162f315Fa'.toLowerCase();
 export const BSX = Address.fromString('0xd5046b976188eb40f6de40fb527f89c05b323385');
 
+export const OVN_USD_PLUS_BASE_POOL = '0x61366A4e6b1DB1b85DD701f2f4BFa275EF271197'.toLowerCase();
+
 export const WETH_LIST_BASE = [
   // cbETH
   Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22'),
@@ -112,6 +114,8 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0x9483ab65847a447e36d21af1cab8c87e9712ff93'.toLowerCase(),
   // DOLA
   '0x4621b7a9c75199271f773ebd9a499dbd165c3191'.toLowerCase(),
+  '0xB79DD08EA68A908A97220C76d19A6aA9cBDE4376'.toLowerCase(),
+  '0xC19669A405067927865B40Ea045a2baabbbe57f5'.toLowerCase()
 ]
 
 export const PS_ADDRESSES_MAINNET = [
