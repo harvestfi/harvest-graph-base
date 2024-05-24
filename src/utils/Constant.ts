@@ -47,12 +47,13 @@ export const XBSX = '0xE4750593d1fC8E74b31549212899A72162f315Fa'.toLowerCase();
 export const BSX = Address.fromString('0xd5046b976188eb40f6de40fb527f89c05b323385');
 
 export const OVN_USD_PLUS_BASE_POOL = '0x61366A4e6b1DB1b85DD701f2f4BFa275EF271197'.toLowerCase();
+export const CRV_CRV_USD_POOL = '0x6DfE79cecE4f64c1a34F48cF5802492aB595257E'.toLowerCase();
 
 export const WETH_LIST_BASE = [
   // cbETH
-  Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22'),
+  // Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22'),
   // rETH
-  Address.fromString('0xB6fe221Fe9EeF5aBa221c348bA20A1Bf5e73624c')
+  // Address.fromString('0xB6fe221Fe9EeF5aBa221c348bA20A1Bf5e73624c')
 ]
 export const STABLE_COIN_ARRAY_MAINNET = [
   '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'.toLowerCase(),
@@ -115,7 +116,8 @@ export const STABLE_COIN_ARRAY_BASE = [
   // DOLA
   '0x4621b7a9c75199271f773ebd9a499dbd165c3191'.toLowerCase(),
   '0xB79DD08EA68A908A97220C76d19A6aA9cBDE4376'.toLowerCase(),
-  '0xC19669A405067927865B40Ea045a2baabbbe57f5'.toLowerCase()
+  '0xC19669A405067927865B40Ea045a2baabbbe57f5'.toLowerCase(),
+  '0x65a2508C429a6078a7BC2f7dF81aB575BD9D9275'.toLowerCase()
 ]
 
 export const PS_ADDRESSES_MAINNET = [

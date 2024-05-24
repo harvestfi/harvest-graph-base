@@ -6,7 +6,7 @@ import {
   BD_ONE,
   BD_TEN, BD_ZERO,
   BI_18,
-  BI_TEN, BSX, CB_ETH_ETH_POOL,
+  BI_TEN, BSX, CB_ETH_ETH_POOL, CRV_CRV_USD_POOL,
   DEFAULT_DECIMAL,
   DEFAULT_PRICE,
   getFarmToken,
@@ -38,9 +38,9 @@ export function getPriceForCoin(address: Address): BigInt {
 
   let tokenAddress = address;
 
-  if (isWeth(address)) {
-    tokenAddress = WETH_BASE
-  }
+  // if (isWeth(address)) {
+  //   tokenAddress = WETH_BASE
+  // }
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
   if (price.gt(BigInt.zero())) {
     return price;
@@ -131,15 +131,7 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
   const underlying = Token.load(underlyingAddress)
   if (underlying != null) {
     if (isLpUniPair(underlying.name)) {
-      const tempPrice = getPriceForCoin(Address.fromString(underlyingAddress))
-      if (tempPrice.gt(DEFAULT_PRICE)) {
-        createPriceFeed(vault, tempPrice.divDecimal(BD_18), block);
-        return tempPrice.divDecimal(BD_18)
-      }
       let tempInPrice = getPriceLpUniPair(underlying.id);
-      if (underlying.id == OVN_USD_PLUS_BASE_POOL) {
-        tempInPrice = tempInPrice.times(BigDecimal.fromString('2'));
-      }
       createPriceFeed(vault, tempInPrice, block);
       return tempInPrice
     }
@@ -151,7 +143,10 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
     }
 
     if (isCurve(underlying.name)) {
-      const tempPrice = getPriceForCurve(underlying.id)
+      let tempPrice = getPriceForCurve(underlying.id)
+      if (underlying.id.toLowerCase() == CRV_CRV_USD_POOL) {
+        tempPrice = tempPrice.times(BigDecimal.fromString('2'))
+      }
       createPriceFeed(vault, tempPrice, block);
       return tempPrice;
     }

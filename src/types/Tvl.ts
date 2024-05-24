@@ -42,11 +42,13 @@ export function createTvl(address: Address, block: ethereum.Block): Tvl | null {
       } else {
         tvl.value = BD_ZERO;
       }
+      tvl.tvlSequenceId = vault.tvlSequenceId;
       tvl.save()
 
       createTotalTvl(vault.tvl, tvl.value, id, block)
       vault.tvl = tvl.value
       vault.priceUnderlying = price
+      vault.tvlSequenceId = vault.tvlSequenceId + 1;
       vault.save()
     }
 

@@ -30,6 +30,7 @@ export function loadOrCreateVault(vaultAddress: Address, block: ethereum.Block, 
     vault.priceUnderlying = BigDecimal.zero();
     vault.apyReward = BigDecimal.zero();
     vault.apy = BigDecimal.zero();
+    vault.tvlSequenceId = 1;
     vault.apyAutoCompound = BigDecimal.zero();
     vault.users = [];
     vault.lastUsersShareTimestamp = BigInt.zero();

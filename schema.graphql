@@ -18,6 +18,7 @@ type Vault @entity {
   strategy: Strategy
   active: Boolean
   pool: Pool
+  tvlSequenceId: Int!
   underlying: Token!
   tvl: BigDecimal!
   priceUnderlying: BigDecimal!
@@ -92,6 +93,7 @@ type Tvl @entity {
   vault: Vault
   totalSupply: BigInt!
   value: BigDecimal!
+  tvlSequenceId: Int!
   priceUnderlying: BigDecimal!
   sharePrice: BigInt!
   timestamp: BigInt!
