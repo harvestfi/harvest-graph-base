@@ -71,16 +71,16 @@ export function createTotalTvl(oldValue:BigDecimal, newValue: BigDecimal, id: st
   totalTvl.value = totalTvl.value.minus(oldValue).plus(newValue);
   totalTvl.save()
 
-  let totalTvlHistory = TotalTvlHistory.load(id)
-  if (totalTvlHistory == null) {
-    totalTvlHistory = new TotalTvlHistory(id)
-
-    totalTvlHistory.sequenceId = totalTvlUp()
-    totalTvlHistory.value = totalTvl.value
-    totalTvlHistory.timestamp = block.timestamp
-    totalTvlHistory.createAtBlock = block.number
-    totalTvlHistory.save()
-  }
+  // let totalTvlHistory = TotalTvlHistory.load(id)
+  // if (totalTvlHistory == null) {
+  //   totalTvlHistory = new TotalTvlHistory(id)
+  //
+  //   totalTvlHistory.sequenceId = totalTvlUp()
+  //   totalTvlHistory.value = totalTvl.value
+  //   totalTvlHistory.timestamp = block.timestamp
+  //   totalTvlHistory.createAtBlock = block.number
+  //   totalTvlHistory.save()
+  // }
 }
 
 export function createTvlV2(totalTvl: BigDecimal, block: ethereum.Block): void {
