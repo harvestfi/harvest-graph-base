@@ -19,6 +19,7 @@ type Vault @entity {
   active: Boolean
   pool: Pool
   tvlSequenceId: Int!
+  priceFeedSequenceId: Int!
   underlying: Token!
   tvl: BigDecimal!
   priceUnderlying: BigDecimal!
@@ -29,6 +30,7 @@ type Vault @entity {
   lastUsersShareTimestamp: BigInt!
   lastSharePrice: BigInt!
   users: [String!]!
+  lastTimestampProcess: BigInt!
   skipFirstApyReward: Boolean
 }
 
@@ -293,6 +295,7 @@ type PriceFeed @entity {
   vault: Vault!
   price: BigDecimal!
   sharePrice: BigDecimal!
+  priceFeedSequenceId: Int!
   # price * sharePrice
   value: BigDecimal!
   timestamp: BigInt!

@@ -4,12 +4,12 @@ import { VaultContract } from "../../generated/templates/VaultListener/VaultCont
 import { ERC20 } from "../../generated/Controller/ERC20";
 import { pow } from "../utils/MathUtils";
 import { BD_TEN } from "../utils/Constant";
+import { loadOrCreateVault } from './Vault';
 
 export function createUserBalance(vaultAddress: Address, amount: BigInt, beneficary: Address, tx: ethereum.Transaction, block: ethereum.Block, isDeposit: boolean): void {
   const vault = Vault.load(vaultAddress.toHex())
   if (vault != null) {
     const vaultContract = VaultContract.bind(vaultAddress)
-    const sharePrice = vaultContract.getPricePerFullShare().divDecimal(pow(BD_TEN, vault.decimal.toI32()))
     let poolBalance = BigDecimal.zero()
     if (vault.pool != null) {
       const poolContract = ERC20.bind(Address.fromString(vault.pool!))
@@ -49,7 +49,7 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
 
     updateVaultUsers(vault, value, beneficary.toHex());
 
-    userBalanceHistory.sharePrice = vaultContract.getPricePerFullShare()
+    userBalanceHistory.sharePrice = vault.lastSharePrice;
     userBalanceHistory.save()
 
     const userTransaction = new UserTransaction(`${tx.hash.toHex()}-${vault.id}-${isDeposit.toString()}`)
@@ -60,10 +60,75 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
     userTransaction.transactionType = isDeposit
       ? 'Deposit'
       : 'Withdraw'
-    userTransaction.sharePrice = vaultContract.getPricePerFullShare()
+    userTransaction.sharePrice = vault.lastSharePrice;
     userTransaction.value = amount
     userTransaction.save()
   }
+}
+
+export function createUserBalanceSimple(vault: Vault, value: BigInt, from: Address, to: Address, block: ethereum.Block, tx: ethereum.Transaction): void {
+  const valueBD = value.divDecimal(pow(BD_TEN, vault.decimal.toI32()));
+  let userBalanceId = `${vault.id}-${from.toHex()}`
+  let userBalance = UserBalance.load(userBalanceId)
+  if (userBalance == null) {
+    userBalance = new UserBalance(userBalanceId)
+    userBalance.createAtBlock = block.number
+    userBalance.timestamp = block.timestamp
+    userBalance.vault = vault.id
+    userBalance.value = BigDecimal.zero()
+    userBalance.userAddress = from.toHex()
+    userBalance.poolBalance = BigDecimal.zero()
+    userBalance.vaultBalance = BigDecimal.zero()
+  }
+
+  userBalance.value = userBalance.value.minus(valueBD)
+
+  userBalance.save()
+
+  let userBalanceHistory = new UserBalanceHistory(`${tx.hash.toHex()}-${from.toHex()}-${vault.id}-false`)
+  userBalanceHistory.createAtBlock = block.number
+  userBalanceHistory.timestamp = block.timestamp
+  userBalanceHistory.userAddress = from.toHex()
+  userBalanceHistory.vault = vault.id
+  userBalanceHistory.transactionType = 'Withdraw'
+  userBalanceHistory.value = userBalance.value
+  userBalanceHistory.poolBalance = userBalance.poolBalance
+  userBalanceHistory.vaultBalance = userBalance.vaultBalance
+  userBalanceHistory.priceUnderlying = vault.priceUnderlying
+  updateVaultUsers(vault, valueBD, from.toHex());
+  userBalanceHistory.sharePrice = vault.lastSharePrice;
+  userBalanceHistory.save();
+
+  userBalanceId = `${vault.id}-${to.toHex()}`
+  userBalance = UserBalance.load(userBalanceId)
+  if (userBalance == null) {
+    userBalance = new UserBalance(userBalanceId)
+    userBalance.createAtBlock = block.number
+    userBalance.timestamp = block.timestamp
+    userBalance.vault = vault.id
+    userBalance.value = BigDecimal.zero()
+    userBalance.userAddress = to.toHex()
+    userBalance.poolBalance = BigDecimal.zero()
+    userBalance.vaultBalance = BigDecimal.zero()
+  }
+
+  userBalance.value = userBalance.value.plus(valueBD)
+
+  userBalance.save()
+
+  userBalanceHistory = new UserBalanceHistory(`${tx.hash.toHex()}-${to.toHex()}-${vault.id}-true`)
+  userBalanceHistory.createAtBlock = block.number
+  userBalanceHistory.timestamp = block.timestamp
+  userBalanceHistory.userAddress = to.toHex()
+  userBalanceHistory.vault = vault.id
+  userBalanceHistory.transactionType = 'Deposit'
+  userBalanceHistory.value = userBalance.value
+  userBalanceHistory.poolBalance = userBalance.poolBalance
+  userBalanceHistory.vaultBalance = userBalance.vaultBalance
+  userBalanceHistory.priceUnderlying = vault.priceUnderlying
+  updateVaultUsers(vault, valueBD, to.toHex());
+  userBalanceHistory.sharePrice = vault.lastSharePrice;
+  userBalanceHistory.save()
 }
 
 function updateVaultUsers(vault: Vault, value: BigDecimal, userAddress: string): void {

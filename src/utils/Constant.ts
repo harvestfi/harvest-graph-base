@@ -34,7 +34,7 @@ export const USDC_BASE = Address.fromString('0xd9aAEc86B65D86f6A7B5B1b0c42FFA531
 export const WA_WETH = Address.fromString('0x18C100415988bEF4354EfFAd1188d1c22041B046');
 export const ST_ETH_A_ETH = Address.fromString('0x5a7f39435fd9c381e4932fa2047c9a5136a5e3e7');
 export const R_ETH_A_ETH = Address.fromString('0xcba9ff45cfb9ce238afde32b0148eb82cbe63562');
-
+export const MOON_ETH_VAUTL = Address.fromString('0x0B0193fAD49DE45F5E2B0A9f5D6Bc3BB7D281688');
 export const WETH_LIST = [
   ST_ETH_A_ETH,
   WA_WETH,

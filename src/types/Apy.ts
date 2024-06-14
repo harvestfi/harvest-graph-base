@@ -80,6 +80,7 @@ export function saveApyReward(
 
       vault.apyReward = apy;
       vault.apy = vault.apyAutoCompound.plus(vault.apyReward)
+      vault.priceUnderlying = price;
       vault.save();
       calculateGeneralApy(vault, block);
     }

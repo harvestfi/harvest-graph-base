@@ -75,7 +75,7 @@ export function handleBlock(block: ethereum.Block): void {
   const vaultUtils = getVaultUtils();
   for (let i = 0; i < vaultUtils.vaults.length; i++) {
     const vault = loadOrCreateVault(Address.fromString(vaultUtils.vaults[i]), block);
-    const price = getPriceByVault(vault, block);
+    const price = vault.priceUnderlying;
 
     const priceHistoryId = `${vault.id}-${block.number.toString()}`
     let priceHistory = PriceHistory.load(priceHistoryId)

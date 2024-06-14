@@ -31,8 +31,10 @@ export function loadOrCreateVault(vaultAddress: Address, block: ethereum.Block, 
     vault.apyReward = BigDecimal.zero();
     vault.apy = BigDecimal.zero();
     vault.tvlSequenceId = 1;
+    vault.priceFeedSequenceId = 0;
     vault.apyAutoCompound = BigDecimal.zero();
     vault.users = [];
+    vault.lastTimestampProcess = BigInt.zero();
     vault.lastUsersShareTimestamp = BigInt.zero();
     vault.save();
     VaultListener.create(vaultAddress)
