@@ -3,12 +3,6 @@ import { getVaultUtils, loadOrCreateVault } from './types/Vault';
 import { pow, powBI } from "./utils/MathUtils";
 import {
   BD_TEN,
-  BI_EVERY_24_HOURS, BI_EVERY_7_DAYS,
-  BI_TEN,
-  EVERY_24_HOURS,
-  EVERY_7_DAYS,
-  MODULE_RESULT,
-  MODULE_RESULT_V2, TWO_WEEKS_IN_SECONDS,
 } from './utils/Constant';
 import { SharePriceChangeLog } from "../generated/Controller/ControllerContract";
 import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts';
@@ -45,15 +39,6 @@ export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
       }
       vault.lastShareTimestamp = sharePrice.timestamp
       vault.lastSharePrice = sharePrice.newSharePrice
-
-
-      if (vault.lastUsersShareTimestamp.plus(TWO_WEEKS_IN_SECONDS).lt(event.block.timestamp)) {
-        const users = vault.users
-        for (let i = 0; i < users.length; i++) {
-          createUserBalance(event.params.vault, BigInt.zero(), Address.fromString(users[i]), event.transaction, event.block, false);
-        }
-        vault.lastUsersShareTimestamp = event.block.timestamp
-      }
       vault.save()
     }
 
