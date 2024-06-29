@@ -72,8 +72,5 @@ export function handleBlock(block: ethereum.Block): void {
       priceHistory.timestamp = block.timestamp
       priceHistory.save();
     }
-
-    vault.priceUnderlying = price
-    vault.save();
   }
 }

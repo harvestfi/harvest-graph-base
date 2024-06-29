@@ -7,10 +7,19 @@ import { loadOrCreateVault } from './Vault';
 export function pushVault(address: string, block: ethereum.Block): void {
   const vaultUtils = getTvlUtils(block);
 
-  let array = vaultUtils.vaults
-  array.push(address)
-  vaultUtils.vaults = array
-  vaultUtils.save()
+  let canAdd = true;
+  let array = vaultUtils.vaults;
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] == address) {
+      canAdd = false;
+      break;
+    }
+  }
+  if (canAdd) {
+    array.push(address)
+    vaultUtils.vaults = array
+    vaultUtils.save()
+  }
 }
 
 export function getTvlUtils(block: ethereum.Block): TotalTvlUtil {
@@ -43,7 +52,8 @@ export function createTotalTvl(block: ethereum.Block): void {
   for (let i = 0; i < array.length; i++) {
     const vault = Address.fromString(array[i]);
     const tvl = loadOrCreateVault(vault, block).tvl
-    totalTvl = totalTvl.plus(tvl)
+    const tempTotalTvl = totalTvl.plus(tvl)
+    totalTvl = tempTotalTvl
   }
   createTvlV2(totalTvl, block);
   tvlUtils.lastTimestampUpdate = block.timestamp

@@ -52,7 +52,7 @@ dataSources:
         - handler: handleBlock
           filter:
             kind: polling
-            every: 83440
+            every: 41440
       file: ./src/ControllerListener.ts
 templates:
   - kind: ethereum/contract

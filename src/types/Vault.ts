@@ -24,7 +24,7 @@ export function loadOrCreateVault(vaultAddress: Address, block: ethereum.Block, 
     vault.timestamp = block.timestamp;
     vault.underlying = loadOrCreateERC20Token(underlying).id
     vault.lastShareTimestamp = BigInt.zero()
-    vault.lastSharePrice = BigInt.zero()
+    vault.lastSharePrice = BigInt.fromI32(1);
     vault.skipFirstApyReward = true
     vault.tvl = BigDecimal.zero()
     vault.priceUnderlying = BigDecimal.zero();
@@ -38,13 +38,23 @@ export function loadOrCreateVault(vaultAddress: Address, block: ethereum.Block, 
     vault.lastUsersShareTimestamp = BigInt.zero();
     vault.save();
     VaultListener.create(vaultAddress)
+
     pushVault(vault.id, block)
+
     const vaultUtils= getVaultUtils();
-    const vaults = vaultUtils.vaults
-    vaults.push(vault.id)
-    vaultUtils.vaults = vaults;
-    vaultUtils.vaultLength = vaults.length
-    vaultUtils.save();
+    const vaults = vaultUtils.vaults;
+    let canAdd = true;
+    for (let i = 0; i < vaults.length; i++) {
+      if (vaults[i] == vault.id) {
+        canAdd = false;
+        break;
+      }
+    }
+    if (canAdd) {
+      vaults.push(vault.id)
+      vaultUtils.vaults = vaults;
+      vaultUtils.save();
+    }
   }
 
   return vault;
