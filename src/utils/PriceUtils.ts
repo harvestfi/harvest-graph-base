@@ -13,7 +13,7 @@ import {
   isPsAddress,
   isStableCoin, OVN_USD_PLUS_BASE_POOL,
   USDC_BASE,
-  USDC_DECIMAL, WETH_BASE, XBSX,
+  USDC_DECIMAL, WETH_BASE, WETH_DECIMAL, XBSX,
 } from './Constant';
 import { Token, Vault } from "../../generated/schema";
 import { WeightedPool2TokensContract } from "../../generated/templates/VaultListener/WeightedPool2TokensContract";
@@ -37,16 +37,12 @@ import { CurveMinterContract } from '../../generated/Controller/CurveMinterContr
 export function getPriceForCoin(address: Address): BigInt {
 
   let tokenAddress = address;
-
-  // if (isWeth(address)) {
-  //   tokenAddress = WETH_BASE
-  // }
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
   if (price.gt(BigInt.zero())) {
     return price;
   }
 
-  price = getPriceForAerodrome(WETH_BASE, tokenAddress, AERODROME_SWAP_FACTORY)
+  price = getPriceForAerodromeV2(WETH_BASE, tokenAddress, AERODROME_SWAP_FACTORY)
   if (price.equals(BigInt.zero())) {
     return price;
   }
@@ -56,7 +52,8 @@ export function getPriceForCoin(address: Address): BigInt {
   return price.times(wethPrice).div(BI_18);
 }
 
-function getPriceForAerodrome(tokenA: Address, tokenB: Address, factoryAddress: Address): BigInt {
+// old version
+function getPriceForAerodromeV1(tokenA: Address, tokenB: Address, factoryAddress: Address): BigInt {
   const factory = AedromeFactoryContract.bind(factoryAddress);
   const tryGetPool = factory.try_getPool1(tokenA, tokenB, false);
   if (tryGetPool.reverted) {
@@ -70,6 +67,38 @@ function getPriceForAerodrome(tokenA: Address, tokenB: Address, factoryAddress: 
     return BigInt.zero();
   }
   return tryPrices.value[0];
+}
+
+// new version
+function getPriceForAerodromeV2(tokenA: Address, tokenB: Address, factoryAddress: Address): BigInt {
+  const factory = AedromeFactoryContract.bind(factoryAddress);
+  const tryGetPool = factory.try_getPool1(tokenA, tokenB, false);
+  if (tryGetPool.reverted) {
+    return BigInt.zero();
+  }
+  const pool = AedromePoolContract.bind(tryGetPool.value);
+  const tryToken0 = pool.try_token0();
+  const tryToken1 = pool.try_token1();
+  if (tryToken0.reverted || tryToken1.reverted) {
+    return BigInt.zero();
+  }
+
+  const tryReserves = pool.try_getReserves()
+
+  if (tryReserves.reverted) {
+    return BigInt.zero();
+  }
+  const reserves = tryReserves.value;
+  // const decimal0 = fetchContractDecimal(tryToken0.value)
+  // const decimal1 = fetchContractDecimal(tryToken1.value)
+  //
+  // const delimiter0 = powBI(BI_TEN, DEFAULT_DECIMAL - decimal0.toI32());
+  // const delimiter1 = powBI(BI_TEN, DEFAULT_DECIMAL - decimal1.toI32());
+
+  if (tryToken0.value.equals(tokenA)) {
+    return reserves.get_reserve0().times(BI_18).div(reserves.get_reserve1())
+  }
+  return reserves.get_reserve1().times(BI_18).div(reserves.get_reserve0())
 }
 
 function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory: Address): BigInt {

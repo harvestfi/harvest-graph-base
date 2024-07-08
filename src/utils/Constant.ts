@@ -18,6 +18,7 @@ export const BD_ONE = BigDecimal.fromString('1')
 export const BD_TEN = BigDecimal.fromString('10')
 export const BD_ONE_HUNDRED = BigDecimal.fromString('100')
 export const USDC_DECIMAL = 6;
+export const WETH_DECIMAL = 8;
 
 export const DEFAULT_IFARM_PRICE = BigInt.fromString('40000000000000000000')
 
