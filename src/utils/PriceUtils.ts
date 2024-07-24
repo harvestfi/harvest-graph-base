@@ -89,16 +89,16 @@ function getPriceForAerodromeV2(tokenA: Address, tokenB: Address, factoryAddress
     return BigInt.zero();
   }
   const reserves = tryReserves.value;
-  // const decimal0 = fetchContractDecimal(tryToken0.value)
-  // const decimal1 = fetchContractDecimal(tryToken1.value)
+  const decimal0 = fetchContractDecimal(tryToken0.value)
+  const decimal1 = fetchContractDecimal(tryToken1.value)
   //
   // const delimiter0 = powBI(BI_TEN, DEFAULT_DECIMAL - decimal0.toI32());
   // const delimiter1 = powBI(BI_TEN, DEFAULT_DECIMAL - decimal1.toI32());
 
   if (tryToken0.value.equals(tokenA)) {
-    return reserves.get_reserve0().times(BI_18).div(reserves.get_reserve1())
+    return reserves.get_reserve0().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal1.toI32() - decimal1.toI32())).div(reserves.get_reserve1())
   }
-  return reserves.get_reserve1().times(BI_18).div(reserves.get_reserve0())
+  return reserves.get_reserve1().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal0.toI32() - decimal1.toI32())).div(reserves.get_reserve0())
 }
 
 function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory: Address): BigInt {
