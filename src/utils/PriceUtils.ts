@@ -11,8 +11,8 @@ import {
   DEFAULT_PRICE,
   getFarmToken,
   isPsAddress,
-  isStableCoin, OVN_USD_PLUS_BASE_POOL,
-  USDC_BASE,
+  isStableCoin, OVN_USD_PLUS_BASE_POOL, SPOT_USDC_UNDERLYING,
+  USDC_BASE, USDC_CIRCLE_BASE,
   USDC_DECIMAL, WETH_BASE, WETH_DECIMAL, XBSX,
 } from './Constant';
 import { Token, Vault } from "../../generated/schema";
@@ -37,6 +37,9 @@ import { CurveMinterContract } from '../../generated/Controller/CurveMinterContr
 export function getPriceForCoin(address: Address): BigInt {
 
   let tokenAddress = address;
+  if (SPOT_USDC_UNDERLYING.equals(tokenAddress)) {
+    return getPriceForAerodromeV2(USDC_CIRCLE_BASE, tokenAddress, AERODROME_SWAP_FACTORY);
+  }
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
   if (price.gt(BigInt.zero())) {
     return price;
@@ -96,7 +99,7 @@ function getPriceForAerodromeV2(tokenA: Address, tokenB: Address, factoryAddress
   // const delimiter1 = powBI(BI_TEN, DEFAULT_DECIMAL - decimal1.toI32());
 
   if (tryToken0.value.equals(tokenA)) {
-    return reserves.get_reserve0().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal1.toI32() - decimal1.toI32())).div(reserves.get_reserve1())
+    return reserves.get_reserve0().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal1.toI32() - decimal0.toI32())).div(reserves.get_reserve1())
   }
   return reserves.get_reserve1().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal0.toI32() - decimal1.toI32())).div(reserves.get_reserve0())
 }

@@ -32,9 +32,11 @@ export const CONST_ID = '1';
 
 export const WETH_BASE = Address.fromString('0x4200000000000000000000000000000000000006');
 export const USDC_BASE = Address.fromString('0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA');
+export const USDC_CIRCLE_BASE =Address.fromString('0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913');
 export const WA_WETH = Address.fromString('0x18C100415988bEF4354EfFAd1188d1c22041B046');
 export const ST_ETH_A_ETH = Address.fromString('0x5a7f39435fd9c381e4932fa2047c9a5136a5e3e7');
 export const R_ETH_A_ETH = Address.fromString('0xcba9ff45cfb9ce238afde32b0148eb82cbe63562');
+export const SPOT_USDC_UNDERLYING = Address.fromString('0xa43455d99Eb63473cFA186b388c1BC2EA1B63924');
 export const WETH_LIST = [
   ST_ETH_A_ETH,
   WA_WETH,
