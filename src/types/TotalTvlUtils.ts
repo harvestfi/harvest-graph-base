@@ -1,6 +1,6 @@
 import { TotalTvlCount, TotalTvlUtil } from '../../generated/schema';
 import { Address, BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts';
-import { BI_EVERY_7_DAYS, CONST_ID } from '../utils/Constant';
+import { BI_EVERY_7_DAYS, CONST_ID, MAX_TVL } from '../utils/Constant';
 import { createTvl, createTvlV2 } from './Tvl';
 import { loadOrCreateVault } from './Vault';
 
@@ -52,6 +52,9 @@ export function createTotalTvl(block: ethereum.Block): void {
   for (let i = 0; i < array.length; i++) {
     const vault = Address.fromString(array[i]);
     const tvl = loadOrCreateVault(vault, block).tvl
+    if (tvl.gt(MAX_TVL)) {
+      continue;
+    }
     const tempTotalTvl = totalTvl.plus(tvl)
     totalTvl = tempTotalTvl
   }

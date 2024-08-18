@@ -36,7 +36,7 @@ export const USDC_CIRCLE_BASE =Address.fromString('0x833589fCD6eDb6E08f4c7C32D4f
 export const WA_WETH = Address.fromString('0x18C100415988bEF4354EfFAd1188d1c22041B046');
 export const ST_ETH_A_ETH = Address.fromString('0x5a7f39435fd9c381e4932fa2047c9a5136a5e3e7');
 export const R_ETH_A_ETH = Address.fromString('0xcba9ff45cfb9ce238afde32b0148eb82cbe63562');
-export const SPOT_USDC_UNDERLYING = Address.fromString('0xa43455d99Eb63473cFA186b388c1BC2EA1B63924');
+export const SPOT_BASE = Address.fromString('0x8f2E6758C4D6570344bd5007DEc6301cd57590A0')
 export const WETH_LIST = [
   ST_ETH_A_ETH,
   WA_WETH,
@@ -56,6 +56,8 @@ export const WETH_LIST_BASE = [
   // Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22'),
   // rETH
   // Address.fromString('0xB6fe221Fe9EeF5aBa221c348bA20A1Bf5e73624c')
+  // Wrapped eETH (weETH.base)
+  Address.fromString('0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A')
 ]
 export const STABLE_COIN_ARRAY_MAINNET = [
   '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'.toLowerCase(),
@@ -120,9 +122,6 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0xB79DD08EA68A908A97220C76d19A6aA9cBDE4376'.toLowerCase(),
   '0xC19669A405067927865B40Ea045a2baabbbe57f5'.toLowerCase(),
   '0x65a2508C429a6078a7BC2f7dF81aB575BD9D9275'.toLowerCase(),
-  // TODO fix after KLIMA price
-  '0x958682ec6282bc7e939fa8ba9397805c214c3a09'.toLowerCase(),
-  '0xb37642e87613d8569fd8ec80888ea6c63684e79e'.toLowerCase()
 ]
 
 export const PS_ADDRESSES_MAINNET = [
@@ -194,6 +193,7 @@ export const UNISWAP_V3_POISON_FINANCE_POOL = Address.fromString('0xa74eceae9c76
 export const NULL_ADDRESS = Address.fromString('0x0000000000000000000000000000000000000000');
 
 export const MAX_APY_REWARD = BigDecimal.fromString('1000');
+export const MAX_TVL = BigDecimal.fromString('100000000');
 export const TAKE_FROM_TOTAL_ASSETS = [
   '0xfC2640ca71B1724B89dc2714E661B0089f8c0EED'.toLowerCase(),
 ]

@@ -11,7 +11,7 @@ import {
   DEFAULT_PRICE,
   getFarmToken,
   isPsAddress,
-  isStableCoin, OVN_USD_PLUS_BASE_POOL, SPOT_USDC_UNDERLYING,
+  isStableCoin, OVN_USD_PLUS_BASE_POOL, SPOT_BASE,
   USDC_BASE, USDC_CIRCLE_BASE,
   USDC_DECIMAL, WETH_BASE, WETH_DECIMAL, XBSX,
 } from './Constant';
@@ -37,9 +37,17 @@ import { CurveMinterContract } from '../../generated/Controller/CurveMinterContr
 export function getPriceForCoin(address: Address): BigInt {
 
   let tokenAddress = address;
-  if (SPOT_USDC_UNDERLYING.equals(tokenAddress)) {
-    return getPriceForAerodromeV2(USDC_CIRCLE_BASE, tokenAddress, AERODROME_SWAP_FACTORY);
+
+  if (SPOT_BASE == address) {
+    // TODO fix spot price
+    // return getPriceForAerodromeFromPool(USDC_CIRCLE_BASE, SPOT_BASE);
+    return BI_18;
   }
+
+  if (isWeth(address)) {
+    return getPriceForCoinWithSwap(WETH_BASE, USDC_BASE, BASE_SWAP_FACTORY);
+  }
+
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
   if (price.gt(BigInt.zero())) {
     return price;
@@ -104,6 +112,29 @@ function getPriceForAerodromeV2(tokenA: Address, tokenB: Address, factoryAddress
   return reserves.get_reserve1().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal0.toI32() - decimal1.toI32())).div(reserves.get_reserve0())
 }
 
+function getPriceForAerodromeFromPool(tokenA: Address, poolAdr: Address): BigInt {
+  const pool = AedromePoolContract.bind(poolAdr);
+  const tryToken0 = pool.try_token0();
+  const tryToken1 = pool.try_token1();
+  if (tryToken0.reverted || tryToken1.reverted) {
+    return BigInt.zero();
+  }
+
+  const tryReserves = pool.try_getReserves()
+
+  if (tryReserves.reverted) {
+    return BigInt.zero();
+  }
+  const reserves = tryReserves.value;
+  const decimal0 = fetchContractDecimal(tryToken0.value)
+  const decimal1 = fetchContractDecimal(tryToken1.value)
+
+  if (tryToken0.value.equals(tokenA)) {
+    return reserves.get_reserve0().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal1.toI32() - decimal0.toI32())).div(reserves.get_reserve1())
+  }
+  return reserves.get_reserve1().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal0.toI32() - decimal1.toI32())).div(reserves.get_reserve0())
+}
+
 function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory: Address): BigInt {
   if (isStableCoin(address.toHex())) {
     return BI_18
@@ -152,7 +183,6 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
     createPriceFeed(vault, tempPrice, block);
     return tempPrice;
   }
-
 
   let price = getPriceForCoin(Address.fromString(underlyingAddress))
   if (!price.isZero()) {
