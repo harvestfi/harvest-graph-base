@@ -11,9 +11,9 @@ import {
   DEFAULT_PRICE,
   getFarmToken,
   isPsAddress,
-  isStableCoin, OVN_USD_PLUS_BASE_POOL, SPOT_BASE,
+  isStableCoin, OVN_USD_PLUS_BASE_POOL, SPOT_BASE, SPOT_USDC_POOL_BASE,
   USDC_BASE, USDC_CIRCLE_BASE,
-  USDC_DECIMAL, WETH_BASE, WETH_DECIMAL, XBSX,
+  USDC_DECIMAL, WE_WETH_BASE, WETH_BASE, WETH_DECIMAL, XBSX,
 } from './Constant';
 import { Token, Vault } from "../../generated/schema";
 import { WeightedPool2TokensContract } from "../../generated/templates/VaultListener/WeightedPool2TokensContract";
@@ -39,13 +39,7 @@ export function getPriceForCoin(address: Address): BigInt {
   let tokenAddress = address;
 
   if (SPOT_BASE == address) {
-    // TODO fix spot price
-    // return getPriceForAerodromeFromPool(USDC_CIRCLE_BASE, SPOT_BASE);
-    return BI_18;
-  }
-
-  if (isWeth(address)) {
-    return getPriceForCoinWithSwap(WETH_BASE, USDC_BASE, BASE_SWAP_FACTORY);
+    return getPriceForAerodromeFromPool(USDC_CIRCLE_BASE, SPOT_USDC_POOL_BASE);
   }
 
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
@@ -174,6 +168,12 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
 
   if (CB_ETH_ETH_POOL == vault.id) {
     const tempPrice = getPriceForCoin(WETH_BASE).times(BI_TEN).divDecimal(BD_18);
+    createPriceFeed(vault, tempPrice, block);
+    return tempPrice;
+  }
+
+  if (WE_WETH_BASE == underlyingAddress) {
+    const tempPrice = getPriceForCoin(WETH_BASE).divDecimal(BD_18);
     createPriceFeed(vault, tempPrice, block);
     return tempPrice;
   }
