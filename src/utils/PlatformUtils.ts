@@ -65,9 +65,9 @@ export function checkBalancer(address: Address): boolean {
   return !contract.try_getPoolId().reverted
 }
 
-export function isWeth(address: Address): boolean {
+export function isWeth(address: string): boolean {
   for (let i=0;i<WETH_LIST_BASE.length;i++) {
-    if (address.equals(WETH_LIST_BASE[i])) {
+    if (address == WETH_LIST_BASE[i]) {
       return true
     }
   }

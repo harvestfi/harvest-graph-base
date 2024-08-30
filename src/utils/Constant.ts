@@ -53,13 +53,14 @@ export const BSX = Address.fromString('0xd5046b976188eb40f6de40fb527f89c05b32338
 export const OVN_USD_PLUS_BASE_POOL = '0x61366A4e6b1DB1b85DD701f2f4BFa275EF271197'.toLowerCase();
 export const CRV_CRV_USD_POOL = '0x6DfE79cecE4f64c1a34F48cF5802492aB595257E'.toLowerCase();
 export const WE_WETH_BASE = '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A'.toLowerCase();
+
 export const WETH_LIST_BASE = [
-  // cbETH
-  // Address.fromString('0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22'),
-  // rETH
-  // Address.fromString('0xB6fe221Fe9EeF5aBa221c348bA20A1Bf5e73624c')
-  // Wrapped eETH (weETH.base)
-  Address.fromString('0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A')
+  WE_WETH_BASE,
+  '0xb8866732424acddd729c6fcf7146b19bfe4a2e36'.toLowerCase(),
+  '0x497139e8435e01555ac1e3740fccab7aff149e02'.toLowerCase(),
+  '0xde4fb30ccc2f1210fce2c8ad66410c586c8d1f9a'.toLowerCase(),
+  '0x91f0f34916ca4e2cce120116774b0e4fa0cdcaa8'.toLowerCase(),
+  '0xa24382874a6fd59de45bbccfa160488647514c28'.toLowerCase()
 ]
 export const STABLE_COIN_ARRAY_MAINNET = [
   '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'.toLowerCase(),
@@ -124,6 +125,15 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0xB79DD08EA68A908A97220C76d19A6aA9cBDE4376'.toLowerCase(),
   '0xC19669A405067927865B40Ea045a2baabbbe57f5'.toLowerCase(),
   '0x65a2508C429a6078a7BC2f7dF81aB575BD9D9275'.toLowerCase(),
+  '0xb5e331615fdba7df49e05cdeaceb14acdd5091c3'.toLowerCase(),
+  '0xfdf5139b38525627b47538536042a7c8d2686bd9'.toLowerCase(),
+  '0x79ef3ecda775860a2351ae2a7b80c4d80ba47f72'.toLowerCase(),
+  '0x6d0b9c9e92a3de30081563c3657b5258b3ffa38b'.toLowerCase(),
+  '0xe96c788e66a97cf455f46c5b27786191fd3bc50b'.toLowerCase(),
+  '0xcefc8b799a8ee5d9b312aeca73262645d664aaf7'.toLowerCase(),
+  '0xe7e01f38470136de763d22e534e53c8bcdba3f39'.toLowerCase(),
+  '0x7a034374c89c463dd65d8c9bcfe63bcbced41f4f'.toLowerCase(),
+  '0xf213f2d02837012dc0236cc105061e121bb03e37'.toLowerCase()
 ]
 
 export const PS_ADDRESSES_MAINNET = [

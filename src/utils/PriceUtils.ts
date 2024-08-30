@@ -172,7 +172,7 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
     return tempPrice;
   }
 
-  if (WE_WETH_BASE == underlyingAddress) {
+  if (isWeth(underlyingAddress)) {
     const tempPrice = getPriceForCoin(WETH_BASE).divDecimal(BD_18);
     createPriceFeed(vault, tempPrice, block);
     return tempPrice;
