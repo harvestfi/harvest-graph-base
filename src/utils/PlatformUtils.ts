@@ -1,5 +1,5 @@
 import {
-  BALANCER_BTC_POOLS,
+  BTC_ARRAY_BASE,
   BALANCER_CONTRACT_NAME, CAMELOT_CONTRACT,
   CURVE_CONTRACT_NAME,
   F_UNI_V3_CONTRACT_NAME,
@@ -76,8 +76,8 @@ export function isWeth(address: string): boolean {
 }
 
 export function isBtc(address: string): boolean {
-  for (let i=0;i<BALANCER_BTC_POOLS.length;i++) {
-    if (address.toLowerCase() == BALANCER_BTC_POOLS[i]) {
+  for (let i=0; i<BTC_ARRAY_BASE.length; i++) {
+    if (address.toLowerCase() == BTC_ARRAY_BASE[i]) {
       return true
     }
   }

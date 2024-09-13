@@ -1,6 +1,6 @@
 import { Address, BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
-  AERODROME_SWAP_FACTORY,
+  AERODROME_SWAP_FACTORY, AXL_WBTC_BASE,
   BASE_SWAP_FACTORY,
   BD_18,
   BD_ONE,
@@ -23,7 +23,7 @@ import { fetchContractDecimal } from "./ERC20Utils";
 import { pow, powBI } from "./MathUtils";
 import {
   checkBalancer,
-  isBalancer, isCurve,
+  isBalancer, isBtc, isCurve,
   isLpUniPair, isWeth,
 } from './PlatformUtils';
 import { PancakeFactoryContract } from '../../generated/Controller/PancakeFactoryContract';
@@ -40,6 +40,10 @@ export function getPriceForCoin(address: Address): BigInt {
 
   if (SPOT_BASE == address) {
     return getPriceForAerodromeFromPool(USDC_CIRCLE_BASE, SPOT_USDC_POOL_BASE);
+  }
+
+  if (isBtc(address.toHex())) {
+    return getPriceForCoinWithSwap(AXL_WBTC_BASE, USDC_BASE, BASE_SWAP_FACTORY)
   }
 
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)

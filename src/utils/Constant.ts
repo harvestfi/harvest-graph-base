@@ -32,6 +32,7 @@ export const CONST_ID = '1';
 
 export const WETH_BASE = Address.fromString('0x4200000000000000000000000000000000000006');
 export const USDC_BASE = Address.fromString('0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA');
+export const AXL_WBTC_BASE = Address.fromString('0x1a35EE4640b0A3B87705B0A4B45D227Ba60Ca2ad');
 export const USDC_CIRCLE_BASE =Address.fromString('0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913');
 export const WA_WETH = Address.fromString('0x18C100415988bEF4354EfFAd1188d1c22041B046');
 export const ST_ETH_A_ETH = Address.fromString('0x5a7f39435fd9c381e4932fa2047c9a5136a5e3e7');
@@ -101,8 +102,9 @@ export const PS_ADDRESSES_MATIC = [
   '0xab0b2ddb9c7e440fac8e140a89c0dbcbf2d7bbff'.toLowerCase(),
 ]
 
-export const BALANCER_BTC_POOLS = [
+export const BTC_ARRAY_BASE = [
   '0x542f16da0efb162d20bf4358efa095b70a100f9e'.toLowerCase(),
+  '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf'.toLowerCase()
 ]
 
 export const LP_UNI_PAIR_CONTRACT_NAME = [
