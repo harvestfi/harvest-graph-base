@@ -87,7 +87,9 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0xe7e01f38470136de763d22e534e53c8bcdba3f39'.toLowerCase(),
   '0x7a034374c89c463dd65d8c9bcfe63bcbced41f4f'.toLowerCase(),
   '0xf213f2d02837012dc0236cc105061e121bb03e37'.toLowerCase(),
-  '0x04d5ddf5f3a8939889f11e97f8c4bb48317f1938'.toLowerCase()
+  '0x04d5ddf5f3a8939889f11e97f8c4bb48317f1938'.toLowerCase(),
+  '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'.toLowerCase(),
+  '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42'.toLowerCase(),
 ]
 
 export const PS_ADDRESSES_MAINNET = [
