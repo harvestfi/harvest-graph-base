@@ -46,6 +46,14 @@ export function getPriceForCoin(address: Address): BigInt {
     return getPriceForCoinWithSwap(AXL_WBTC_BASE, USDC_BASE, BASE_SWAP_FACTORY)
   }
 
+  if (isStableCoin(tokenAddress.toHex().toLowerCase())) {
+    return BI_18;
+  }
+
+  if (WETH_BASE == tokenAddress) {
+    return getPriceForCoinWithSwap(WETH_BASE, USDC_BASE, BASE_SWAP_FACTORY)
+  }
+
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
   if (price.gt(BigInt.zero())) {
     return price;
@@ -134,7 +142,7 @@ function getPriceForAerodromeFromPool(tokenA: Address, poolAdr: Address): BigInt
 }
 
 function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory: Address): BigInt {
-  if (isStableCoin(address.toHex())) {
+  if (isStableCoin(address.toHex().toLowerCase())) {
     return BI_18
   }
   const uniswapFactoryContract = PancakeFactoryContract.bind(factory)
@@ -172,6 +180,12 @@ export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal
 
   if (CB_ETH_ETH_POOL == vault.id) {
     const tempPrice = getPriceForCoin(WETH_BASE).times(BI_TEN).divDecimal(BD_18);
+    createPriceFeed(vault, tempPrice, block);
+    return tempPrice;
+  }
+
+  if (isStableCoin(underlyingAddress)) {
+    const tempPrice = BD_ONE;
     createPriceFeed(vault, tempPrice, block);
     return tempPrice;
   }
