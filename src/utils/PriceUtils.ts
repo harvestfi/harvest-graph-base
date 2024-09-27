@@ -8,8 +8,8 @@ import {
   BI_18,
   BI_TEN, BSX, CB_ETH_ETH_POOL, CRV_CRV_USD_POOL,
   DEFAULT_DECIMAL,
-  DEFAULT_PRICE,
-  getFarmToken,
+  DEFAULT_PRICE, EURC_BASE,
+  getFarmToken, isEuro,
   isPsAddress,
   isStableCoin, OVN_USD_PLUS_BASE_POOL, SPOT_BASE, SPOT_USDC_POOL_BASE,
   USDC_BASE, USDC_CIRCLE_BASE,
@@ -48,6 +48,10 @@ export function getPriceForCoin(address: Address): BigInt {
 
   if (isStableCoin(tokenAddress.toHex().toLowerCase())) {
     return BI_18;
+  }
+
+  if (isEuro(tokenAddress.toHex().toLowerCase())) {
+    tokenAddress = EURC_BASE;
   }
 
   if (WETH_BASE == tokenAddress) {

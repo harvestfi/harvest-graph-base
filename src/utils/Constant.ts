@@ -32,6 +32,7 @@ export const CONST_ID = '1';
 
 export const WETH_BASE = Address.fromString('0x4200000000000000000000000000000000000006');
 export const USDC_BASE = Address.fromString('0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA');
+export const EURC_BASE = Address.fromString('0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42');
 export const AXL_WBTC_BASE = Address.fromString('0x1a35EE4640b0A3B87705B0A4B45D227Ba60Ca2ad');
 export const USDC_CIRCLE_BASE =Address.fromString('0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913');
 export const WA_WETH = Address.fromString('0x18C100415988bEF4354EfFAd1188d1c22041B046');
@@ -89,7 +90,13 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0xf213f2d02837012dc0236cc105061e121bb03e37'.toLowerCase(),
   '0x04d5ddf5f3a8939889f11e97f8c4bb48317f1938'.toLowerCase(),
   '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'.toLowerCase(),
-  '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42'.toLowerCase(),
+  '0x0000206329b97DB379d5E1Bf586BbDB969C63274'.toLowerCase(),
+]
+
+export const EURO_ARRAY_BASE = [
+  '0xA61BeB4A3d02decb01039e378237032B351125B4'.toLowerCase(),
+  '0xE111178A87A3BFf0c8d18DECBa5798827539Ae99'.toLowerCase(),
+  '0x4154550f4Db74Dc38d1FE98e1F3F28ed6daD627d'.toLowerCase()
 ]
 
 export const PS_ADDRESSES_MAINNET = [
@@ -168,6 +175,10 @@ export const TAKE_FROM_TOTAL_ASSETS = [
 ]
 export function isStableCoin(address: string): boolean {
   return STABLE_COIN_ARRAY_BASE.join(' ').includes(address) == true;
+}
+
+export function isEuro(address: string): boolean {
+  return EURO_ARRAY_BASE.join(' ').includes(address) == true;
 }
 
 export function isPsAddress(address: string): boolean {
