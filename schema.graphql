@@ -41,8 +41,8 @@ type VaultUtil @entity {
   lastBlockPrice: BigInt!
 }
 
-type PriceHistory @entity {
-  id: ID!
+type PriceHistory @entity(immutable: true) {
+  id: Bytes!
 
   price: BigDecimal!
   vault: Vault!
@@ -51,9 +51,9 @@ type PriceHistory @entity {
   createAtBlock: BigInt!
 }
 
-type VaultHistory @entity {
+type VaultHistory @entity(immutable: true) {
   "tx + vault address"
-  id: ID!
+  id: Bytes!
   vault: Vault!
 
   priceUnderlying: BigDecimal!
@@ -70,17 +70,17 @@ type Strategy @entity {
   createAtBlock: BigInt!
 }
 
-type LastHarvest @entity {
-  id: ID!
+type LastHarvest @entity(immutable: true) {
+  id: Bytes!
   tx: String!
   strategy: Strategy!
   timestamp: BigInt!
   createAtBlock: BigInt!
 }
 
-type SharePrice @entity {
+type SharePrice @entity(immutable: true) {
   "tx hash"
-  id: ID!
+  id: Bytes!
   vault: Vault
   strategy: Strategy
   oldSharePrice: BigInt!
@@ -89,9 +89,9 @@ type SharePrice @entity {
   createAtBlock: BigInt!
 }
 
-type Tvl @entity {
+type Tvl @entity(immutable: true) {
   "tx-vault"
-  id: ID!
+  id: Bytes!
   vault: Vault
   totalSupply: BigInt!
   value: BigDecimal!
@@ -116,16 +116,12 @@ type Pool @entity {
   createAtBlock: BigInt!
 }
 
-type Token @entity {
+type Token @entity(immutable: true) {
   "token address"
   id: ID!
   name: String!
   symbol: String!
   decimals: Int!
-}
-
-type User @entity {
-  id: ID!
 }
 
 enum PoolType {
@@ -134,10 +130,10 @@ enum PoolType {
   ExclusiveRewardPool
 }
 
-type Reward @entity {
+type Reward @entity(immutable: true) {
   # transaction hash alone is not unique, we need to add pool address
   "transactionhash-pooladdress-rewardtoken"
-  id: ID!
+  id: Bytes!
   timestamp: BigInt!
   pool: Pool!
   "token that is rewarded"
@@ -151,9 +147,9 @@ type Reward @entity {
   periodFinish: BigInt!
 }
 
-type ApyReward @entity {
+type ApyReward @entity(immutable: true) {
   "transactionhash-vaultaddress"
-  id: ID!
+  id: Bytes!
   vault: Vault!
   apy: BigDecimal!
   apr: BigDecimal!
@@ -166,9 +162,9 @@ type ApyReward @entity {
   createAtBlock: BigInt!
 }
 
-type ApyAutoCompound @entity {
+type ApyAutoCompound @entity(immutable: true) {
   "transactionhash-vaultaddress"
-  id: ID!
+  id: Bytes!
   vault: Vault!
   apy: BigDecimal!
   apr: BigDecimal!
@@ -178,9 +174,9 @@ type ApyAutoCompound @entity {
   createAtBlock: BigInt!
 }
 
-type GeneralApy @entity {
+type GeneralApy @entity(immutable: true) {
   "transactionhash-vaultaddress"
-  id: ID!
+  id: Bytes!
   apy: BigDecimal!
   apyAutoCompound: BigDecimal!
   apyReward: BigDecimal!
@@ -209,9 +205,9 @@ type UserBalance @entity {
   createAtBlock: BigInt!
 }
 
-type UserBalanceHistory @entity {
+type UserBalanceHistory @entity(immutable: true) {
   "tx-user"
-  id: ID!
+  id: Bytes!
   userAddress: String!
   transactionType: TransactionType!
   vault: Vault!
@@ -242,9 +238,9 @@ type UserProfit @entity {
   userAddress: String
 }
 
-type UserProfitHistory @entity {
+type UserProfitHistory @entity(immutable: true) {
   "tx-user-vault"
-  id: ID!
+  id: Bytes!
   userAddress: String
   transactionType: TransactionType!
   vault: Vault!
@@ -256,9 +252,9 @@ type UserProfitHistory @entity {
   createAtBlock: BigInt!
 }
 
-type UserTransaction @entity {
+type UserTransaction @entity(immutable: true) {
   "tx"
-  id: ID!
+  id: Bytes!
   userAddress: String!
   transactionType: TransactionType!
   vault: Vault!
@@ -281,9 +277,9 @@ type TotalTvl @entity{
   value: BigDecimal!
 }
 
-type TotalTvlHistory @entity{
+type TotalTvlHistory @entity(immutable: true) {
 
-  id: ID!
+  id: Bytes!
 
   sequenceId: BigInt!
   value: BigDecimal!
@@ -292,9 +288,9 @@ type TotalTvlHistory @entity{
   createAtBlock: BigInt!
 }
 
-type TotalTvlHistoryV2 @entity{
+type TotalTvlHistoryV2 @entity(immutable: true) {
 
-  id: ID!
+  id: Bytes!
 
   value: BigDecimal!
   sequenceId: BigInt!
@@ -322,8 +318,8 @@ type TotalTvlCount @entity{
   length: BigInt!
 }
 
-type PriceFeed @entity {
-  id: ID!
+type PriceFeed @entity(immutable: true) {
+  id: Bytes!
   vault: Vault!
   price: BigDecimal!
   sharePrice: BigDecimal!

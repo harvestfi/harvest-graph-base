@@ -1,5 +1,5 @@
 import { ApyAutoCompound, ApyReward, GeneralApy, Pool, Vault } from '../../generated/schema';
-import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts';
 import { getPriceByVault, getPriceForCoin } from "../utils/PriceUtils";
 import {
   BD_18,
@@ -64,7 +64,7 @@ export function saveApyReward(
       if (apy.gt(MAX_APY_REWARD)) {
         return;
       }
-      const apyReward = new ApyReward(`${tx.hash.toHex()}-${vault.id}`)
+      const apyReward = new ApyReward(Bytes.fromHexString(`${tx.hash.toHex()}-${vault.id}`))
 
       apyReward.periodFinishes = periodFinishes
       apyReward.rewardRates = rewardRates
@@ -87,7 +87,7 @@ export function saveApyReward(
   }
 }
 
-export function calculateAndSaveApyAutoCompound(id: string, diffSharePrice: BigDecimal, diffTimestamp: BigInt, vault: Vault, block: ethereum.Block): BigDecimal {
+export function calculateAndSaveApyAutoCompound(id: Bytes, diffSharePrice: BigDecimal, diffTimestamp: BigInt, vault: Vault, block: ethereum.Block): BigDecimal {
   let apyAutoCompound = ApyAutoCompound.load(id)
   if (apyAutoCompound == null) {
     apyAutoCompound = new ApyAutoCompound(id)
@@ -109,7 +109,7 @@ export function calculateAndSaveApyAutoCompound(id: string, diffSharePrice: BigD
 }
 
 export function calculateGeneralApy(vault: Vault, block: ethereum.Block): void {
-  const id = `${vault.id}-${block.number}`;
+  const id = Bytes.fromHexString(`${vault.id}-${block.number}`);
   let generalApy = GeneralApy.load(id)
   if (!generalApy) {
     generalApy = new GeneralApy(id);
