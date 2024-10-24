@@ -14,7 +14,7 @@ export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
   const strategyAddress = event.params.strategy.toHex();
   const block = event.block.number;
   const timestamp = event.block.timestamp;
-  const sharePrice = new SharePrice(Bytes.fromHexString(`${event.transaction.hash.toHex()}-${vaultAddress}`));
+  const sharePrice = new SharePrice(Bytes.fromUTF8(`${event.transaction.hash.toHex()}-${vaultAddress}`));
   let vault = Vault.load(vaultAddress)
   if (vault == null) {
     vault = loadOrCreateVault(Address.fromString(vaultAddress), event.block, strategyAddress)
@@ -33,14 +33,14 @@ export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
       const lastShareTimestamp = vault.lastShareTimestamp
       const diffSharePrice = sharePrice.newSharePrice.minus(sharePrice.oldSharePrice).divDecimal(pow(BD_TEN, vault.decimal.toI32()))
       const diffTimestamp = timestamp.minus(lastShareTimestamp)
-      calculateAndSaveApyAutoCompound(Bytes.fromHexString(`${event.transaction.hash.toHex()}-${vaultAddress}`), diffSharePrice, diffTimestamp, vault, event.block)
+      calculateAndSaveApyAutoCompound(Bytes.fromUTF8(`${event.transaction.hash.toHex()}-${vaultAddress}`), diffSharePrice, diffTimestamp, vault, event.block)
 
       vault.lastShareTimestamp = sharePrice.timestamp
       vault.lastSharePrice = sharePrice.newSharePrice
       vault.save()
     }
 
-    const vaultHistoryId = Bytes.fromHexString(`${event.transaction.hash.toHexString()}-${vaultAddress}`)
+    const vaultHistoryId = Bytes.fromUTF8(`${event.transaction.hash.toHexString()}-${vaultAddress}`)
     let vaultHistory = VaultHistory.load(vaultHistoryId)
     if (!vaultHistory) {
       vaultHistory = new VaultHistory(vaultHistoryId);
@@ -60,7 +60,7 @@ export function handleBlock(block: ethereum.Block): void {
     const vault = loadOrCreateVault(Address.fromString(vaultUtils.vaults[i]), block);
     const price = vault.priceUnderlying;
 
-    const priceHistoryId = Bytes.fromHexString(`${vault.id}-${block.number.toString()}`);
+    const priceHistoryId = Bytes.fromUTF8(`${vault.id}-${block.number.toString()}`);
     let priceHistory = PriceHistory.load(priceHistoryId)
     if (!priceHistory) {
       priceHistory = new PriceHistory(priceHistoryId);

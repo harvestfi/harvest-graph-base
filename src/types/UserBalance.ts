@@ -55,7 +55,7 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
     userBalance.value = value
 
     userBalance.save()
-    const historyId = Bytes.fromHexString(`${tx.hash.toHex()}-${beneficary.toHex()}-${vault.id}-${isDeposit.toString()}`);
+    const historyId = Bytes.fromUTF8(`${tx.hash.toHex()}-${beneficary.toHex()}-${vault.id}-${isDeposit.toString()}`);
     const userBalanceHistory = new UserBalanceHistory(historyId)
     userBalanceHistory.createAtBlock = block.number
     userBalanceHistory.timestamp = block.timestamp
@@ -77,7 +77,7 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
     userBalanceHistory.sharePrice = vault.lastSharePrice;
     userBalanceHistory.save()
 
-    const userTransaction = new UserTransaction(Bytes.fromHexString(`${tx.hash.toHex()}-${vault.id}-${isDeposit.toString()}`))
+    const userTransaction = new UserTransaction(Bytes.fromUTF8(`${tx.hash.toHex()}-${vault.id}-${isDeposit.toString()}`))
     userTransaction.createAtBlock = block.number
     userTransaction.timestamp = block.timestamp
     userTransaction.userAddress = beneficary.toHex()

@@ -11,7 +11,7 @@ export function createTvl(address: Address, block: ethereum.Block): Tvl | null {
   const vaultAddress = address;
   const vault = Vault.load(vaultAddress.toHex())
   if (vault != null) {
-    const id = Bytes.fromHexString(`${block.number.toHex()}-${vaultAddress.toHex()}`)
+    const id = Bytes.fromUTF8(`${block.number.toHex()}-${vaultAddress.toHex()}`)
     let tvl = Tvl.load(id)
     if (tvl == null) {
       canCalculateTotalTvlV2(block);
@@ -84,7 +84,7 @@ export function createTotalTvl(oldValue:BigDecimal, newValue: BigDecimal): void 
 }
 
 export function createTvlV2(totalTvl: BigDecimal, block: ethereum.Block): void {
-  const id = Bytes.fromHexString(`${block.number.toHex()}`)
+  const id = Bytes.fromUTF8(`${block.number.toHex()}`)
   let totalTvlHistory = TotalTvlHistoryV2.load(id)
   if (totalTvlHistory == null) {
     totalTvlHistory = new TotalTvlHistoryV2(id)

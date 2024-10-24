@@ -13,7 +13,7 @@ export function saveReward(
   let pool = Pool.load(poolAddress.toHex())
   if (pool != null) {
     // create reward
-    let reward = new Reward(Bytes.fromHexString(`${tx.hash.toHex()}-${pool.id}-${rewardToken.toHex()}`))
+    let reward = new Reward(Bytes.fromUTF8(`${tx.hash.toHex()}-${pool.id}-${rewardToken.toHex()}`))
     reward.timestamp = block.timestamp
     reward.pool = poolAddress.toHex()
     reward.token = rewardToken.toHex()

@@ -64,7 +64,7 @@ export function saveApyReward(
       if (apy.gt(MAX_APY_REWARD)) {
         return;
       }
-      const apyReward = new ApyReward(Bytes.fromHexString(`${tx.hash.toHex()}-${vault.id}`))
+      const apyReward = new ApyReward(Bytes.fromUTF8(`${tx.hash.toHex()}-${vault.id}`))
 
       apyReward.periodFinishes = periodFinishes
       apyReward.rewardRates = rewardRates
@@ -109,7 +109,7 @@ export function calculateAndSaveApyAutoCompound(id: Bytes, diffSharePrice: BigDe
 }
 
 export function calculateGeneralApy(vault: Vault, block: ethereum.Block): void {
-  const id = Bytes.fromHexString(`${vault.id}-${block.number}`);
+  const id = Bytes.fromUTF8(`${vault.id}-${block.number}`);
   let generalApy = GeneralApy.load(id)
   if (!generalApy) {
     generalApy = new GeneralApy(id);
