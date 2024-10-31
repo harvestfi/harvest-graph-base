@@ -41,12 +41,6 @@ export const R_ETH_A_ETH = Address.fromString('0xcba9ff45cfb9ce238afde32b0148eb8
 export const SPOT_BASE = Address.fromString('0x8f2E6758C4D6570344bd5007DEc6301cd57590A0');
 export const SPOT_USDC_POOL_BASE = Address.fromString('0xa43455d99Eb63473cFA186b388c1BC2EA1B63924')
 
-export const WETH_LIST = [
-  ST_ETH_A_ETH,
-  WA_WETH,
-  R_ETH_A_ETH
-];
-
 
 export const CB_ETH_ETH_POOL = '0x4c8d67201dced0a8e44f59d419cb74665b4cde55'.toLowerCase();
 export const XBSX = '0xE4750593d1fC8E74b31549212899A72162f315Fa'.toLowerCase();
@@ -62,7 +56,8 @@ export const WETH_LIST_BASE = [
   '0x497139e8435e01555ac1e3740fccab7aff149e02'.toLowerCase(),
   '0xde4fb30ccc2f1210fce2c8ad66410c586c8d1f9a'.toLowerCase(),
   '0x91f0f34916ca4e2cce120116774b0e4fa0cdcaa8'.toLowerCase(),
-  '0xa24382874a6fd59de45bbccfa160488647514c28'.toLowerCase()
+  '0xa24382874a6fd59de45bbccfa160488647514c28'.toLowerCase(),
+  '0xedfa23602d0ec14714057867a78d01e94176bea0'.toLowerCase()
 ]
 
 export const STABLE_COIN_ARRAY_BASE = [

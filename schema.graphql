@@ -104,7 +104,7 @@ type Tvl @entity(immutable: true) {
   decimal: BigDecimal!
 }
 
-type Pool @entity {
+type Pool @entity(immutable: true) {
   "pool address"
   id: ID!
   vault: Vault!
@@ -122,6 +122,12 @@ type Token @entity(immutable: true) {
   name: String!
   symbol: String!
   decimals: Int!
+}
+
+type TokenPrice @entity(immutable: true) {
+  id: ID!
+  price: BigDecimal!
+  timestamp: BigInt!
 }
 
 enum PoolType {
@@ -326,6 +332,17 @@ type PriceFeed @entity(immutable: true) {
   priceFeedSequenceId: Int!
   # price * sharePrice
   value: BigDecimal!
+  timestamp: BigInt!
+  createAtBlock: BigInt!
+}
+
+type RewardPaidEntity @entity(immutable: true) {
+  id: Bytes!
+  userAddress: String!
+  pool: Pool!
+  value: BigInt!
+  price: BigDecimal!
+  token: Token!
   timestamp: BigInt!
   createAtBlock: BigInt!
 }
