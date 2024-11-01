@@ -124,7 +124,7 @@ type Token @entity(immutable: true) {
   decimals: Int!
 }
 
-type TokenPrice @entity(immutable: true) {
+type TokenPrice @entity {
   id: ID!
   price: BigDecimal!
   timestamp: BigInt!
