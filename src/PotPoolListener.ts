@@ -8,8 +8,8 @@ import { RewardPaidEntity, TokenPrice } from '../generated/schema';
 import { loadOrCreatePotPool } from './types/PotPool';
 import { loadOrCreateERC20Token } from './types/Token';
 import { getPriceForCoin } from './utils/PriceUtils';
-import { powBI } from './utils/MathUtils';
-import { BI_EVERY_24_HOURS } from './utils/Constant';
+import { pow, powBI } from './utils/MathUtils';
+import { BD_TEN, BI_EVERY_24_HOURS } from './utils/Constant';
 import { store } from '@graphprotocol/graph-ts';
 
 export function handleRewardAdded(event: RewardAdded): void {
@@ -53,7 +53,7 @@ export function handleRewardPaid(event: RewardPaid): void {
     let priceBD = BigDecimal.zero();
 
     if (price.gt(BigInt.zero())) {
-      priceBD = powBI(price, rewardToken.decimals).toBigDecimal();
+      priceBD = price.divDecimal(pow(BD_TEN, rewardToken.decimals));
     }
     tokenPrice.price = priceBD;
     tokenPrice.timestamp = event.block.timestamp;
