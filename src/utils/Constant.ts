@@ -80,7 +80,6 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0x6d0b9c9e92a3de30081563c3657b5258b3ffa38b'.toLowerCase(),
   '0xe96c788e66a97cf455f46c5b27786191fd3bc50b'.toLowerCase(),
   '0xcefc8b799a8ee5d9b312aeca73262645d664aaf7'.toLowerCase(),
-  '0xe7e01f38470136de763d22e534e53c8bcdba3f39'.toLowerCase(),
   '0x7a034374c89c463dd65d8c9bcfe63bcbced41f4f'.toLowerCase(),
   '0xf213f2d02837012dc0236cc105061e121bb03e37'.toLowerCase(),
   '0x04d5ddf5f3a8939889f11e97f8c4bb48317f1938'.toLowerCase(),
