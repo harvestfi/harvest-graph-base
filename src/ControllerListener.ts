@@ -35,9 +35,8 @@ export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
       const diffTimestamp = timestamp.minus(lastShareTimestamp)
       calculateAndSaveApyAutoCompound(Bytes.fromUTF8(`${event.transaction.hash.toHex()}-${vaultAddress}`), diffSharePrice, diffTimestamp, vault, event.block)
 
-      vault.lastSharePrice = sharePrice.newSharePrice
     }
-
+    vault.lastSharePrice = sharePrice.newSharePrice
     vault.lastShareTimestamp = sharePrice.timestamp
     vault.save()
 
