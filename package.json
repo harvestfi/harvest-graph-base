@@ -5,7 +5,7 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "test": "graph test",
-    "deploy-studio": "graph codegen && graph build && graph deploy --studio -l v0.0.37 harvest-base && npm run after-deploy",
+    "deploy-studio": "graph codegen && graph build && graph deploy --studio -l v0.0.38 harvest-base && npm run after-deploy",
     "deploy-test-stage-studio": "graph codegen && graph build && graph deploy --studio -l v0.1.8 l2-base",
     "after-deploy": "./deploy.sh"
   },
