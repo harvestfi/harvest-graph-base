@@ -48,11 +48,6 @@ dataSources:
       eventHandlers:
         - event: SharePriceChangeLog(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleSharePriceChangeLog
-      blockHandlers:
-        - handler: handleBlock
-          filter:
-            kind: polling
-            every: 10000
       file: ./src/ControllerListener.ts
 templates:
   - kind: ethereum/contract

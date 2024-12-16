@@ -8,7 +8,7 @@ import {
   BI_18,
   BI_TEN, BSX, CB_ETH_ETH_POOL, CRV_CRV_USD_POOL,
   DEFAULT_DECIMAL,
-  DEFAULT_PRICE, EURC_BASE,
+  DEFAULT_PRICE, EURC_BASE, FARM_BASE, FARM_WETH_PRICE,
   getFarmToken, isEuro,
   isPsAddress,
   isStableCoin, OVN_USD_PLUS_BASE_POOL, SPOT_BASE, SPOT_USDC_POOL_BASE,
@@ -40,6 +40,12 @@ export function getPriceForCoin(address: Address): BigInt {
 
   if (SPOT_BASE == address) {
     return getPriceForAerodromeFromPool(USDC_CIRCLE_BASE, SPOT_USDC_POOL_BASE);
+  }
+
+  if (FARM_BASE == address) {
+    const farmPrice = getPriceForAerodromeFromPool(FARM_BASE, FARM_WETH_PRICE);
+    const wethPrice = getPriceForCoinWithSwap(WETH_BASE, USDC_BASE, BASE_SWAP_FACTORY)
+    return farmPrice.times(wethPrice).div(BI_18);
   }
 
   if (isBtc(address.toHex())) {
@@ -172,7 +178,7 @@ function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory:
   return reserves.get_reserve1().times(delimiter).div(reserves.get_reserve0())
 }
 
-export function getPriceByVault(vault: Vault, block: ethereum.Block): BigDecimal {
+export function getPriceByVault(vault: Vault, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero()): BigDecimal {
 
   if (isPsAddress(vault.id)) {
     const tempPrice = getPriceForCoin(getFarmToken()).divDecimal(BD_18);

@@ -23,6 +23,7 @@ type Vault @entity {
   underlying: Token!
   tvl: BigDecimal!
   priceUnderlying: BigDecimal!
+  lastPriceUpdate: BigInt!
   apy: BigDecimal!
   apyReward: BigDecimal!
   apyAutoCompound: BigDecimal!
@@ -32,13 +33,6 @@ type Vault @entity {
   users: [String!]!
   lastTimestampProcess: BigInt!
   skipFirstApyReward: Boolean
-}
-
-type VaultUtil @entity {
-  id: ID!
-  vaults: [Vault!]!
-  vaultLength: Int!
-  lastBlockPrice: BigInt!
 }
 
 type PriceHistory @entity(immutable: true) {
@@ -159,10 +153,10 @@ type ApyReward @entity(immutable: true) {
   vault: Vault!
   apy: BigDecimal!
   apr: BigDecimal!
-  prices: [BigDecimal!]!
-  periodFinishes: [BigInt!]!
-  rewardRates: [BigInt!]!
-  rewardForPeriods: [BigDecimal!]!
+  prices: BigDecimal!
+  periodFinishes: BigInt!
+  rewardRates: BigInt!
+  rewardForPeriods: BigDecimal!
   tvlUsd: BigDecimal!
   timestamp: BigInt!
   createAtBlock: BigInt!
@@ -345,4 +339,10 @@ type RewardPaidEntity @entity(immutable: true) {
   token: Token!
   timestamp: BigInt!
   createAtBlock: BigInt!
+}
+
+type TokenInPrice @entity {
+  id: Bytes!
+  price: BigInt!
+  lastUpdate: BigInt!
 }

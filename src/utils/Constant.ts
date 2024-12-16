@@ -22,6 +22,7 @@ export const WETH_DECIMAL = 8;
 
 export const DEFAULT_IFARM_PRICE = BigInt.fromString('40000000000000000000')
 
+export const BI_12_HOURS = BigInt.fromI32(43200);
 export const EVERY_24_HOURS = 86400;
 export const BI_EVERY_24_HOURS = BigInt.fromString('86400');
 export const EVERY_7_DAYS = 604800;
@@ -40,7 +41,8 @@ export const ST_ETH_A_ETH = Address.fromString('0x5a7f39435fd9c381e4932fa2047c9a
 export const R_ETH_A_ETH = Address.fromString('0xcba9ff45cfb9ce238afde32b0148eb82cbe63562');
 export const SPOT_BASE = Address.fromString('0x8f2E6758C4D6570344bd5007DEc6301cd57590A0');
 export const SPOT_USDC_POOL_BASE = Address.fromString('0xa43455d99Eb63473cFA186b388c1BC2EA1B63924')
-
+export const FARM_BASE = Address.fromString('0xD08a2917653d4E460893203471f0000826fb4034');
+export const FARM_WETH_PRICE = Address.fromString('0xD08a2917653d4E460893203471f0000826fb4034');
 
 export const CB_ETH_ETH_POOL = '0x4c8d67201dced0a8e44f59d419cb74665b4cde55'.toLowerCase();
 export const XBSX = '0xE4750593d1fC8E74b31549212899A72162f315Fa'.toLowerCase();
