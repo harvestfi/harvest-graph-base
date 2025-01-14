@@ -271,14 +271,11 @@ enum TransactionType {
 }
 
 type TotalTvl @entity{
-
   id: ID!
-
   value: BigDecimal!
 }
 
 type TotalTvlHistory @entity(immutable: true) {
-
   id: Bytes!
 
   sequenceId: BigInt!
