@@ -3,7 +3,7 @@ import { BigDecimal, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts';
 import { pow } from '../utils/MathUtils';
 import { BD_TEN } from '../utils/Constant';
 
-export function createPriceFeed(vault: Vault, price: BigDecimal, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero()): PriceFeed {
+export function createPriceFeed(vault: Vault, price: BigDecimal, timestamp: BigInt, block: BigInt): PriceFeed {
   const id = Bytes.fromUTF8(`${vault.id}-${block}`);
   let priceFeed = PriceFeed.load(id);
   if (!priceFeed) {

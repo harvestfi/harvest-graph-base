@@ -182,7 +182,7 @@ export function getPriceByVault(vault: Vault, timestamp: BigInt = BigInt.zero(),
 
   if (isPsAddress(vault.id)) {
     const tempPrice = getPriceForCoin(getFarmToken()).divDecimal(BD_18);
-    createPriceFeed(vault, tempPrice, block);
+    createPriceFeed(vault, tempPrice, timestamp, block);
     return tempPrice;
   }
 
@@ -190,31 +190,31 @@ export function getPriceByVault(vault: Vault, timestamp: BigInt = BigInt.zero(),
 
   if (CB_ETH_ETH_POOL == vault.id) {
     const tempPrice = getPriceForCoin(WETH_BASE).times(BI_TEN).divDecimal(BD_18);
-    createPriceFeed(vault, tempPrice, block);
+    createPriceFeed(vault, tempPrice, timestamp, block);
     return tempPrice;
   }
 
   if (isStableCoin(underlyingAddress)) {
     const tempPrice = BD_ONE;
-    createPriceFeed(vault, tempPrice, block);
+    createPriceFeed(vault, tempPrice, timestamp, block);
     return tempPrice;
   }
 
   if (isWeth(underlyingAddress)) {
     const tempPrice = getPriceForCoin(WETH_BASE).divDecimal(BD_18);
-    createPriceFeed(vault, tempPrice, block);
+    createPriceFeed(vault, tempPrice, timestamp, block);
     return tempPrice;
   }
 
   if (XBSX == underlyingAddress) {
     const tempPrice = getPriceForCoin(BSX).divDecimal(BD_18);
-    createPriceFeed(vault, tempPrice, block);
+    createPriceFeed(vault, tempPrice, timestamp, block);
     return tempPrice;
   }
 
   let price = getPriceForCoin(Address.fromString(underlyingAddress))
   if (!price.isZero()) {
-    createPriceFeed(vault, price.divDecimal(BD_18), block);
+    createPriceFeed(vault, price.divDecimal(BD_18), timestamp, block);
     return price.divDecimal(BD_18)
   }
 
@@ -222,13 +222,13 @@ export function getPriceByVault(vault: Vault, timestamp: BigInt = BigInt.zero(),
   if (underlying != null) {
     if (isLpUniPair(underlying.name)) {
       let tempInPrice = getPriceLpUniPair(underlying.id);
-      createPriceFeed(vault, tempInPrice, block);
+      createPriceFeed(vault, tempInPrice, timestamp, block);
       return tempInPrice
     }
 
     if (isBalancer(underlying.name)) {
       const tempPrice = getPriceForBalancer(underlying.id);
-      createPriceFeed(vault, tempPrice, block);
+      createPriceFeed(vault, tempPrice, timestamp, block);
       return tempPrice
     }
 
@@ -237,7 +237,7 @@ export function getPriceByVault(vault: Vault, timestamp: BigInt = BigInt.zero(),
       if (underlying.id.toLowerCase() == CRV_CRV_USD_POOL) {
         tempPrice = tempPrice.times(BigDecimal.fromString('2'))
       }
-      createPriceFeed(vault, tempPrice, block);
+      createPriceFeed(vault, tempPrice, timestamp, block);
       return tempPrice;
     }
   }
