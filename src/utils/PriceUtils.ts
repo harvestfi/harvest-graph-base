@@ -38,6 +38,10 @@ export function getPriceForCoin(address: Address): BigInt {
 
   let tokenAddress = address;
 
+  if (isStableCoin(tokenAddress.toHex().toLowerCase())) {
+    return BI_18;
+  }
+
   if (SPOT_BASE == address) {
     return getPriceForAerodromeFromPool(USDC_CIRCLE_BASE, SPOT_USDC_POOL_BASE);
   }
@@ -52,15 +56,11 @@ export function getPriceForCoin(address: Address): BigInt {
     return getPriceForCoinWithSwap(AXL_WBTC_BASE, USDC_BASE, BASE_SWAP_FACTORY)
   }
 
-  if (isStableCoin(tokenAddress.toHex().toLowerCase())) {
-    return BI_18;
-  }
-
   if (isEuro(tokenAddress.toHex().toLowerCase())) {
     tokenAddress = EURC_BASE;
   }
 
-  if (WETH_BASE == tokenAddress) {
+  if (isWeth(tokenAddress.toHex().toLowerCase())) {
     return getPriceForCoinWithSwap(WETH_BASE, USDC_BASE, BASE_SWAP_FACTORY)
   }
 
