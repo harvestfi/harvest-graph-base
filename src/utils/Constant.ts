@@ -119,7 +119,9 @@ export const BTC_ARRAY_BASE = [
   '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf'.toLowerCase(),
 
   // btc plasma vault
-  '0x370A3D2800b1ea990634835a5709fB31082de6d9'.toLowerCase()
+  '0x370A3D2800b1ea990634835a5709fB31082de6d9'.toLowerCase(),
+  // lBTC
+  '0xecac9c5f704e954931349da37f60e39f515c11c1'.toLowerCase()
 ]
 
 export const LP_UNI_PAIR_CONTRACT_NAME = [
