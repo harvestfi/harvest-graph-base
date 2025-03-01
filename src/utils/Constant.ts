@@ -63,7 +63,12 @@ export const WETH_LIST_BASE = [
   '0xedfa23602d0ec14714057867a78d01e94176bea0'.toLowerCase(),
 
   // plasma weth vault
-  '0x31A36d3eAB4A8e0d365eB72EE9079603aF6C421c'.toLowerCase()
+  '0x31A36d3eAB4A8e0d365eB72EE9079603aF6C421c'.toLowerCase(),
+
+  // plasma weth vault 2
+  '0x168826EA6576c93cFca473A16bA14f245a188346'.toLowerCase(),
+  // plasma weth vault 3
+  '0x7872893e528Fe2c0829e405960db5B742112aa97'.toLowerCase(),
 ]
 
 export const STABLE_COIN_ARRAY_BASE = [
@@ -93,7 +98,11 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0x0000206329b97DB379d5E1Bf586BbDB969C63274'.toLowerCase(),
 
   // usdc plasma vault
-  '0xD00E821C550Ce92EbD4A70bEcb02657dA7A5c562'.toLowerCase()
+  '0xD00E821C550Ce92EbD4A70bEcb02657dA7A5c562'.toLowerCase(),
+  // usdc plasma vault 2
+  '0x71f856a030B1f5e75a85779a770d8CF96Fb4a1Cb'.toLowerCase(),
+  // usdc plasma vault 3
+  '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4'.toLowerCase(),
 ]
 
 export const EURO_ARRAY_BASE = [
@@ -120,6 +129,10 @@ export const BTC_ARRAY_BASE = [
 
   // btc plasma vault
   '0x370A3D2800b1ea990634835a5709fB31082de6d9'.toLowerCase(),
+  // btc plasma vault 2
+  '0xc4CCeFe822b78898C81AEF6826D2c589bC50cD61'.toLowerCase(),
+  // btc plasma vault 3
+  '0x31A421271414641cb5063B71594b642D2666dB6B'.toLowerCase(),
   // lBTC
   '0xecac9c5f704e954931349da37f60e39f515c11c1'.toLowerCase()
 ]

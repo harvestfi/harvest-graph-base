@@ -4,8 +4,8 @@ schema:
 #features:
 #  - grafting # feature name
 #graft:
-#  base: QmUsNXwU9D9hZMgtfnPkfnMw9Lta2QLZK4CSRQbqB1Yw2r
-#  block: 26513728
+#  base: QmPX4oGCsVNA2qPHMizG877nH7YrJziduwT5umU9ENqttf
+#  block: 26982232
 dataSources:
   - kind: ethereum
     name: Controller
@@ -105,6 +105,106 @@ dataSources:
           handler: handleMarketBalancesUpdated
       file: ./src/PlasmaVaultListener.ts
   - kind: ethereum
+    name: UsdcPlasmaVault2
+    network: base
+    source:
+      address: "0x71f856a030B1f5e75a85779a770d8CF96Fb4a1Cb"
+      abi: PlasmaVaultContract
+      startBlock: 26935598
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
+    name: UsdcPlasmaVault3
+    network: base
+    source:
+      address: "0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4"
+      abi: PlasmaVaultContract
+      startBlock: 26982232
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
     name: WethPlasmaVault
     network: base
     source:
@@ -155,12 +255,212 @@ dataSources:
           handler: handleMarketBalancesUpdated
       file: ./src/PlasmaVaultListener.ts
   - kind: ethereum
+    name: WethPlasmaVault2
+    network: base
+    source:
+      address: "0x168826EA6576c93cFca473A16bA14f245a188346"
+      abi: PlasmaVaultContract
+      startBlock: 26935697
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
+    name: WethPlasmaVault3
+    network: base
+    source:
+      address: "0x7872893e528Fe2c0829e405960db5B742112aa97"
+      abi: PlasmaVaultContract
+      startBlock: 26982330
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
     name: CbBtcPlasmaVault
     network: base
     source:
       address: "0x370A3D2800b1ea990634835a5709fB31082de6d9"
       abi: PlasmaVaultContract
       startBlock: 25642639
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
+    name: CbBtcPlasmaVault2
+    network: base
+    source:
+      address: "0xc4CCeFe822b78898C81AEF6826D2c589bC50cD61"
+      abi: PlasmaVaultContract
+      startBlock: 26935796
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
+    name: CbBtcPlasmaVault3
+    network: base
+    source:
+      address: "0x31A421271414641cb5063B71594b642D2666dB6B"
+      abi: PlasmaVaultContract
+      startBlock: 26982416
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
