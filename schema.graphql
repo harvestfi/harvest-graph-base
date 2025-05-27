@@ -198,6 +198,8 @@ type UserBalance @entity {
   vault: Vault!
   userAddress: String!
   value: BigDecimal!
+  totalDeposit: BigDecimal!
+  totalWithdraw: BigDecimal!
   poolBalance: BigDecimal!
   vaultBalance: BigDecimal!
   underlyingBalance: BigDecimal!

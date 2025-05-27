@@ -10,9 +10,9 @@ import {
 import { VaultContract } from "../../generated/templates/VaultListener/VaultContract";
 import { ERC20 } from "../../generated/Controller/ERC20";
 import { pow } from "../utils/MathUtils";
-import { BD_TEN } from '../utils/Constant';
+import { BD_TEN, NULL_ADDRESS } from '../utils/Constant';
 
-export function createUserBalance(vaultAddress: Address, amount: BigInt, beneficary: Address, isDeposit: boolean, tx: string, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero()): UserBalance | null {
+export function createUserBalance(vaultAddress: Address, amount: BigInt, beneficary: Address, isDeposit: boolean, tx: string, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero(), isNull: boolean = false): UserBalance | null {
   const vault = Vault.load(vaultAddress.toHex())
   if (vault != null) {
     const vaultContract = VaultContract.bind(vaultAddress)
@@ -34,14 +34,24 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
       userBalance.value = BigDecimal.zero()
       userBalance.userAddress = beneficary.toHex()
       userBalance.underlyingBalance = BigDecimal.zero()
+      userBalance.totalDeposit = BigDecimal.zero();
+      userBalance.totalWithdraw = BigDecimal.zero();
     }
 
     const delimiter = pow(BD_TEN, vault.decimal.toI32());
     const sharePriceFormatted = vault.lastSharePrice.divDecimal(delimiter);
     if (isDeposit) {
-      userBalance.underlyingBalance = userBalance.underlyingBalance.plus(amount.divDecimal(delimiter).times(sharePriceFormatted))
+      userBalance.underlyingBalance = userBalance.underlyingBalance.plus(amount.divDecimal(delimiter).times(sharePriceFormatted));
+      // logic for net income
+      if (isNull) {
+        userBalance.totalDeposit = userBalance.totalDeposit.plus(amount.divDecimal(delimiter).times(sharePriceFormatted))
+      }
     } else {
       userBalance.underlyingBalance = userBalance.underlyingBalance.minus(amount.divDecimal(delimiter).times(sharePriceFormatted))
+      // logic for net income
+      if (isNull) {
+        userBalance.totalWithdraw = userBalance.totalWithdraw.plus(amount.divDecimal(delimiter).times(sharePriceFormatted))
+      }
     }
 
     let profit = BigDecimal.zero();

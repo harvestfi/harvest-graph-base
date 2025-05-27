@@ -4,8 +4,8 @@ schema:
 #features:
 #  - grafting # feature name
 #graft:
-#  base: QmPANcHBwNjvu2SjZzkRnZPyC6yJjwyGT1cNAAYdm6mJnx
-#  block: 26982232
+#  base: QmWqyXmd5fxEBCqcvTu7Snh4e7yHqWxLpm8Bp71BgLX16E
+#  block: 28384375
 dataSources:
   - kind: ethereum
     name: Controller

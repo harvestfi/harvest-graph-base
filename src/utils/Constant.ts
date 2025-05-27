@@ -23,6 +23,7 @@ export const WETH_DECIMAL = 8;
 export const DEFAULT_IFARM_PRICE = BigInt.fromString('40000000000000000000')
 
 export const BI_12_HOURS = BigInt.fromI32(43200);
+export const BI_4_HOURS = BigInt.fromI32(14400);
 export const EVERY_24_HOURS = 86400;
 export const BI_EVERY_24_HOURS = BigInt.fromString('86400');
 export const EVERY_7_DAYS = 604800;
@@ -103,6 +104,9 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0x71f856a030B1f5e75a85779a770d8CF96Fb4a1Cb'.toLowerCase(),
   // usdc plasma vault 3
   '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4'.toLowerCase(),
+
+  // usds
+  '0x820c137fa70c8691f0e44dc420a5e53c168921dc'.toLowerCase(),
 ]
 
 export const EURO_ARRAY_BASE = [
@@ -188,6 +192,7 @@ export const SUSHI_SWAP_FACTORY = Address.fromString('0xc35dadb65012ec5796536bd9
 export const UNISWAP_V3_POISON_FINANCE_POOL = Address.fromString('0xa74eceae9c7670b019e0890881598b4c398d1c01');
 
 export const NULL_ADDRESS = Address.fromString('0x0000000000000000000000000000000000000000');
+export const PORTAL_MULTI_CALL = Address.fromString('0xea49d02c248b357b99670d9e9741f54f72df9cb3');
 
 export const MAX_APY_REWARD = BigDecimal.fromString('1000');
 export const MAX_TVL = BigDecimal.fromString('100000000');

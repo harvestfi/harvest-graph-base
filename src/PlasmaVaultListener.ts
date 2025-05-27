@@ -8,6 +8,7 @@ import { bdToBI, pow } from './utils/MathUtils';
 import { stringIdToBytes } from './utils/IdUtils';
 import { MarketBalancesUpdated, PlasmaVaultContract } from '../generated/UsdcPlasmaVault/PlasmaVaultContract';
 import { FuseContract } from '../generated/UsdcPlasmaVault/FuseContract';
+import { createTotalTvl } from './types/Tvl';
 
 export function handleTransfer(event: Transfer): void {
   const vaultContract = PlasmaVaultContract.bind(event.address);
@@ -37,8 +38,6 @@ export function handleTransfer(event: Transfer): void {
   const fuses = vaultContract.getInstantWithdrawalFuses();
   let underlyingDecimal = 18;
   for (let i = 0; i < fuses.length; i++) {
-    const fuseContract = FuseContract.bind(fuses[i]);
-    const marketId = fuseContract.MARKET_ID();
     // TODO change logic
     const pVaultTemp = vaultContract.getInstantWithdrawalFusesParams(fuses[i], BigInt.fromI32(i))[1].toHexString().slice(26)
     const pVault = '0x' + pVaultTemp
@@ -49,29 +48,34 @@ export function handleTransfer(event: Transfer): void {
     }
   }
   const price = getPriceForCoin(Address.fromString(vault.id)).divDecimal(BD_18);
+  const oldTvl = vault.tvl;
 
   vault.tvl = vaultContract.totalAssets().divDecimal(pow(BD_TEN, underlyingDecimal)).times(price);
   vault.save();
 
-  const vaultHistory = new PlasmaVaultHistory(stringIdToBytes(`transfer-${event.transaction.hash.toHex()}-${event.address.toHexString()}`));
-  vaultHistory.tvl = vault.tvl;
-  vaultHistory.apy = vault.apy;
-  vaultHistory.plasmaVault = vault.id;
-  vaultHistory.historySequenceId = vault.historySequenceId;
-  vaultHistory.priceUnderlying = getPriceForCoin(Address.fromString(vault.id)).divDecimal(BD_18);
-  vaultHistory.sharePrice = bdToBI(
-    vaultContract.totalAssets().
-    divDecimal(pow(BD_TEN, underlyingDecimal))
-      .div(vaultContract.totalSupply().divDecimal(pow(BD_TEN, vault.decimals)))
-      .times(pow(BD_TEN, underlyingDecimal))
-  );
-  vaultHistory.assetOld = vault.assetOld;
-  vaultHistory.assetNew = vault.assetNew;
-  vaultHistory.allocDatas = vault.allocDatas;
-  vaultHistory.newAllocDatas = vault.newAllocDatas;
-  vaultHistory.timestamp = event.block.timestamp;
-  vaultHistory.createAtBlock = event.block.number;
-  vaultHistory.save();
+  // create total tvl
+  createTotalTvl(oldTvl, vault.tvl, event.block.timestamp, event.block.number)
+
+
+  // const vaultHistory = new PlasmaVaultHistory(stringIdToBytes(`transfer-${event.transaction.hash.toHex()}-${event.address.toHexString()}`));
+  // vaultHistory.tvl = vault.tvl;
+  // vaultHistory.apy = vault.apy;
+  // vaultHistory.plasmaVault = vault.id;
+  // vaultHistory.historySequenceId = vault.historySequenceId;
+  // vaultHistory.priceUnderlying = getPriceForCoin(Address.fromString(vault.id)).divDecimal(BD_18);
+  // vaultHistory.sharePrice = bdToBI(
+  //   vaultContract.totalAssets().
+  //   divDecimal(pow(BD_TEN, underlyingDecimal))
+  //     .div(vaultContract.totalSupply().divDecimal(pow(BD_TEN, vault.decimals)))
+  //     .times(pow(BD_TEN, underlyingDecimal))
+  // );
+  // vaultHistory.assetOld = vault.assetOld;
+  // vaultHistory.assetNew = vault.assetNew;
+  // vaultHistory.allocDatas = vault.allocDatas;
+  // vaultHistory.newAllocDatas = vault.newAllocDatas;
+  // vaultHistory.timestamp = event.block.timestamp;
+  // vaultHistory.createAtBlock = event.block.number;
+  // vaultHistory.save();
 }
 
 export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void {
@@ -124,7 +128,8 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
     if (hVault != null) {
       log.log(log.Level.INFO, `Vault ${pVault} found, market id ${marketId.toString()}`);
       const marketInAssetOnchain = vaultContract.totalAssetsInMarket(marketId).toBigDecimal();
-      const marketInAsset = marketInAssetOnchain.div(pow(BD_TEN, vault.decimals));
+      // TODO check decimal value, was vault.decimals
+      const marketInAsset = marketInAssetOnchain.div(pow(BD_TEN, hVault.decimal.toI32()));
       assetOld = assetOld.plus(marketInAsset);
       const tempAssetNew = marketInAsset.times(BD_ONE_HUNDRED.plus(hVault.apy));
       log.log(log.Level.INFO, `asset ${tempAssetNew.toString()}, apy ${hVault.apy.toString()}`);
@@ -183,7 +188,7 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
 function createUserBalance(plasmaVault: PlasmaVault, user: Address, amount: BigInt, timestamp: BigInt, isDeposit: boolean): void {
   let userBalance = PlasmaUserBalance.load(stringIdToBytes(plasmaVault.id + '-' + user.toHexString()));
   if (userBalance == null) {
-    userBalance = new PlasmaUserBalance(stringIdToBytes(user.toHexString()));
+    userBalance = new PlasmaUserBalance(stringIdToBytes(plasmaVault.id + '-' + user.toHexString()));
     userBalance.userAddress = user.toHexString();
     userBalance.plasmaVault = plasmaVault.id;
     userBalance.value = BigDecimal.zero();
