@@ -23,6 +23,8 @@ export const WETH_DECIMAL = 8;
 export const DEFAULT_IFARM_PRICE = BigInt.fromString('40000000000000000000')
 
 export const BI_12_HOURS = BigInt.fromI32(43200);
+export const BI_1_HOUR = BigInt.fromI32(3600);
+export const BI_2_HOURS = BigInt.fromI32(7200);
 export const BI_4_HOURS = BigInt.fromI32(14400);
 export const EVERY_24_HOURS = 86400;
 export const BI_EVERY_24_HOURS = BigInt.fromString('86400');
@@ -37,6 +39,7 @@ export const USDC_BASE = Address.fromString('0xd9aAEc86B65D86f6A7B5B1b0c42FFA531
 export const EURC_BASE = Address.fromString('0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42');
 export const AXL_WBTC_BASE = Address.fromString('0x1a35EE4640b0A3B87705B0A4B45D227Ba60Ca2ad');
 export const USDC_CIRCLE_BASE =Address.fromString('0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913');
+export const CB_BTC = Address.fromString('0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf');
 export const WA_WETH = Address.fromString('0x18C100415988bEF4354EfFAd1188d1c22041B046');
 export const ST_ETH_A_ETH = Address.fromString('0x5a7f39435fd9c381e4932fa2047c9a5136a5e3e7');
 export const R_ETH_A_ETH = Address.fromString('0xcba9ff45cfb9ce238afde32b0148eb82cbe63562');
@@ -44,6 +47,8 @@ export const SPOT_BASE = Address.fromString('0x8f2E6758C4D6570344bd5007DEc6301cd
 export const SPOT_USDC_POOL_BASE = Address.fromString('0xa43455d99Eb63473cFA186b388c1BC2EA1B63924')
 export const FARM_BASE = Address.fromString('0xD08a2917653d4E460893203471f0000826fb4034');
 export const FARM_WETH_PRICE = Address.fromString('0xD08a2917653d4E460893203471f0000826fb4034');
+export const CBXRP_USDC_POOL = Address.fromString('0x882f68437e3d753cbc0d1369b555f801b071f7c8')
+export const CBBTC_USDC_POOL = Address.fromString('0x9c38b55f9A9Aba91BbCEDEb12bf4428f47A6a0B8')
 
 export const CB_ETH_ETH_POOL = '0x4c8d67201dced0a8e44f59d419cb74665b4cde55'.toLowerCase();
 export const XBSX = '0xE4750593d1fC8E74b31549212899A72162f315Fa'.toLowerCase();
@@ -52,6 +57,10 @@ export const BSX = Address.fromString('0xd5046b976188eb40f6de40fb527f89c05b32338
 export const OVN_USD_PLUS_BASE_POOL = '0x61366A4e6b1DB1b85DD701f2f4BFa275EF271197'.toLowerCase();
 export const CRV_CRV_USD_POOL = '0x6DfE79cecE4f64c1a34F48cF5802492aB595257E'.toLowerCase();
 export const WE_WETH_BASE = '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A'.toLowerCase();
+
+export const XRP_LIST = [
+  '0xcb585250f852C6c6bf90434AB21A00f02833a4af'.toLowerCase()
+]
 
 export const WETH_LIST_BASE = [
   WE_WETH_BASE,
@@ -62,6 +71,7 @@ export const WETH_LIST_BASE = [
   '0x91f0f34916ca4e2cce120116774b0e4fa0cdcaa8'.toLowerCase(),
   '0xa24382874a6fd59de45bbccfa160488647514c28'.toLowerCase(),
   '0xedfa23602d0ec14714057867a78d01e94176bea0'.toLowerCase(),
+  '0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452'.toLowerCase(),
 
   // plasma weth vault
   '0x31A36d3eAB4A8e0d365eB72EE9079603aF6C421c'.toLowerCase(),
@@ -104,15 +114,20 @@ export const STABLE_COIN_ARRAY_BASE = [
   '0x71f856a030B1f5e75a85779a770d8CF96Fb4a1Cb'.toLowerCase(),
   // usdc plasma vault 3
   '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4'.toLowerCase(),
+  // usdt plasma vault 4
+  '0xd6701905c59ee618dc36dc747506bce0a4ac760a'.toLowerCase(),
 
   // usds
   '0x820c137fa70c8691f0e44dc420a5e53c168921dc'.toLowerCase(),
+  // usdr
+  '0x35e5db674d8e93a03d814fa0ada70731efe8a4b9'.toLowerCase()
 ]
 
 export const EURO_ARRAY_BASE = [
   '0xA61BeB4A3d02decb01039e378237032B351125B4'.toLowerCase(),
   '0xE111178A87A3BFf0c8d18DECBa5798827539Ae99'.toLowerCase(),
-  '0x4154550f4Db74Dc38d1FE98e1F3F28ed6daD627d'.toLowerCase()
+  '0x4154550f4Db74Dc38d1FE98e1F3F28ed6daD627d'.toLowerCase(),
+  '0x180493090667a35d8511be743835dad8715d33be'.toLowerCase(),
 ]
 
 export const PS_ADDRESSES_MAINNET = [

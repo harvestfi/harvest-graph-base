@@ -3,10 +3,13 @@ import { loadOrCreateVault } from './types/Vault';
 import { pow, powBI } from "./utils/MathUtils";
 import {
   BD_TEN,
+  BI_EVERY_7_DAYS,
+  EVERY_7_DAYS,
 } from './utils/Constant';
 import { SharePriceChangeLog } from "../generated/Controller/ControllerContract";
 import { Address, BigDecimal, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts';
 import { calculateAndSaveApyAutoCompound } from "./types/Apy";
+import { getPriceByVault } from './utils/PriceUtils';
 
 
 export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
@@ -40,6 +43,11 @@ export function handleSharePriceChangeLog(event: SharePriceChangeLog): void {
   const vaultHistoryId = Bytes.fromUTF8(`${event.transaction.hash.toHexString()}-${vaultAddress}`)
   let vaultHistory = VaultHistory.load(vaultHistoryId)
   if (!vaultHistory) {
+    if (!vault.lastPriceTimestamp || (vault.lastPriceTimestamp && vault.lastPriceTimestamp!.plus(BI_EVERY_7_DAYS).lt(event.block.timestamp))) {
+      vault.lastPriceTimestamp = event.block.timestamp;
+      vault.priceUnderlying = getPriceByVault(vault, event.block.timestamp, event.block.number);
+      vault.save();
+    }
     vaultHistory = new VaultHistory(vaultHistoryId);
     vaultHistory.vault = vault.id;
     vaultHistory.sharePrice = vault.lastSharePrice;

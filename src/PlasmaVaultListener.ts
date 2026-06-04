@@ -1,11 +1,11 @@
-import { PlasmaUserBalance, PlasmaUserBalanceHistory, PlasmaVault, PlasmaVaultHistory } from '../generated/schema';
+import { PlasmaUserBalance, PlasmaUserBalanceHistory, PlasmaVault, PlasmaVaultDailySnapshot, PlasmaVaultHistory, UserTransaction } from '../generated/schema';
 import { ERC20, Transfer } from '../generated/Controller/ERC20';
-import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt, Bytes, log } from '@graphprotocol/graph-ts';
 import { loadOrCreateVault } from './types/Vault';
 import { getPriceForCoin } from './utils/PriceUtils';
-import { BD_18, BD_ONE_HUNDRED, BD_TEN, BD_ZERO } from './utils/Constant';
+import { BD_18, BD_ONE, BD_ONE_HUNDRED, BD_TEN, BD_ZERO, EVERY_24_HOURS } from './utils/Constant';
 import { bdToBI, pow } from './utils/MathUtils';
-import { stringIdToBytes } from './utils/IdUtils';
+import { formatTimestamp, stringIdToBytes } from './utils/IdUtils';
 import { MarketBalancesUpdated, PlasmaVaultContract } from '../generated/UsdcPlasmaVault/PlasmaVaultContract';
 import { FuseContract } from '../generated/UsdcPlasmaVault/FuseContract';
 import { createTotalTvl } from './types/Tvl';
@@ -23,16 +23,19 @@ export function handleTransfer(event: Transfer): void {
     vault.apy = BigDecimal.zero();
     vault.assetOld = BigDecimal.zero();
     vault.assetNew = BigDecimal.zero();
+    vault.apy_7d = BigDecimal.zero();
+    vault.lastSharePrice = BigInt.zero();
+    vault.priceUnderlying = BigDecimal.zero();
     vault.allocDatas = [];
     vault.newAllocDatas = [];
     vault.timestamp = event.block.timestamp;
     vault.createAtBlock = event.block.number;
   }
   if (event.params.from != Address.zero()) {
-    createUserBalance(vault, event.params.from, event.params.value, event.block.timestamp, false);
+    createUserBalance(vault, event.params.from, event.params.value, event.block.timestamp, event.transaction.hash.toHex(), event.block.number, false, event.transaction.from.toHexString());
   }
   if (event.params.to != Address.zero()) {
-    createUserBalance(vault, event.params.to, event.params.value, event.block.timestamp, true);
+    createUserBalance(vault, event.params.to, event.params.value, event.block.timestamp, event.transaction.hash.toHex(), event.block.number, true, event.transaction.from.toHexString());
   }
 
   const fuses = vaultContract.getInstantWithdrawalFuses();
@@ -89,12 +92,15 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
     vault.historySequenceId = BigInt.fromI32(0);
     vault.tvl = BigDecimal.zero();
     vault.apy = BigDecimal.zero();
+    vault.apy_7d = BigDecimal.zero();
     vault.assetOld = BigDecimal.zero();
     vault.assetNew = BigDecimal.zero();
     vault.allocDatas = [];
     vault.newAllocDatas = [];
     vault.timestamp = event.block.timestamp;
     vault.createAtBlock = event.block.number;
+    vault.lastSharePrice = BigInt.zero();
+    vault.priceUnderlying = BigDecimal.zero();
     vault.save();
   }
 
@@ -131,8 +137,14 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
       // TODO check decimal value, was vault.decimals
       const marketInAsset = marketInAssetOnchain.div(pow(BD_TEN, hVault.decimal.toI32()));
       assetOld = assetOld.plus(marketInAsset);
-      const tempAssetNew = marketInAsset.times(BD_ONE_HUNDRED.plus(hVault.apy));
-      log.log(log.Level.INFO, `asset ${tempAssetNew.toString()}, apy ${hVault.apy.toString()}`);
+      let apy = hVault.apy;
+      // TODO if big APY, set to 1
+      if (apy.gt(BigDecimal.fromString('100'))) {
+        log.log(log.Level.WARNING, `APY is too big ${apy.toString()}, hVault ${hVault.id} vault ${vault.id}`);
+        apy = BigDecimal.fromString('1');
+      }
+      const tempAssetNew = marketInAsset.times(BD_ONE_HUNDRED.plus(apy));
+      log.log(log.Level.INFO, `asset ${tempAssetNew.toString()}, apy ${apy.toString()}`);
       if (tempAssetNew.gt(BD_ZERO)) {
         assetNew = assetNew.plus(tempAssetNew.div(BD_ONE_HUNDRED));
       }
@@ -156,13 +168,47 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
     apy = assetNew.minus(assetOld).div(assetOld).times(BD_ONE_HUNDRED);
   }
 
+  const sharePrice = bdToBI(
+    vaultContract.totalAssets().
+    divDecimal(pow(BD_TEN, underlyingDecimal))
+      .div(vaultContract.totalSupply().divDecimal(pow(BD_TEN, vault.decimals)))
+      .times(pow(BD_TEN, underlyingDecimal))
+  );
+
+  
+  const currentDate = formatTimestamp(event.block.timestamp);
+  const id = `${vault.id}-${currentDate}`;
+  let vaultDailySnapshot = PlasmaVaultDailySnapshot.load(id);
+  if (vaultDailySnapshot == null) {
+    vaultDailySnapshot = new PlasmaVaultDailySnapshot(id);
+    vaultDailySnapshot.apy = [];
+    vaultDailySnapshot.vault = vault.id;
+    vaultDailySnapshot.sharePrice = sharePrice;
+    vaultDailySnapshot.timestamp = event.block.timestamp;
+    vaultDailySnapshot.save();
+  }
+  let oldSharePrice: BigInt | null = BigInt.zero();
+
+  for (let i = 7; i > 0; i--) {
+    const tempDate = formatTimestamp(event.block.timestamp.minus(BigInt.fromI32(i * EVERY_24_HOURS)));
+    const tempId = `${vault.id}-${tempDate}`;
+    const tempVaultDailySnapshot = PlasmaVaultDailySnapshot.load(tempId);
+    if (tempVaultDailySnapshot != null && tempVaultDailySnapshot.sharePrice) {
+      oldSharePrice = tempVaultDailySnapshot.sharePrice;
+      break;
+    }
+  }
+
+  if (oldSharePrice!.gt(BigInt.zero())) {
+    vault.apy_7d = pow(BD_ONE.plus(sharePrice.divDecimal(oldSharePrice!.toBigDecimal())).minus(BD_ONE), 365/7).minus(BD_ONE).times(BD_ONE_HUNDRED);
+  }
+
   vault.historySequenceId = vault.historySequenceId.plus(BigInt.fromI32(1));
   vault.assetOld = assetOld;
   vault.assetNew = assetNew;
   vault.apy = apy;
   vault.allocDatas = allocDatas;
   vault.newAllocDatas = newAllocDatas;
-  vault.save();
 
   const vaultHistory = new PlasmaVaultHistory(stringIdToBytes(`${event.transaction.hash.toHex()}-${event.address.toHexString()}`));
   vaultHistory.tvl = vault.tvl;
@@ -170,12 +216,7 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
   vaultHistory.plasmaVault = vault.id;
   vaultHistory.historySequenceId = vault.historySequenceId;
   vaultHistory.priceUnderlying = getPriceForCoin(Address.fromString(vault.id)).divDecimal(BD_18);
-  vaultHistory.sharePrice = bdToBI(
-    vaultContract.totalAssets().
-    divDecimal(pow(BD_TEN, underlyingDecimal))
-      .div(vaultContract.totalSupply().divDecimal(pow(BD_TEN, vault.decimals)))
-      .times(pow(BD_TEN, underlyingDecimal))
-  );
+  vaultHistory.sharePrice = sharePrice;
   vaultHistory.assetOld = vault.assetOld;
   vaultHistory.assetNew = vault.assetNew;
   vaultHistory.allocDatas = vault.allocDatas;
@@ -183,9 +224,13 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
   vaultHistory.timestamp = event.block.timestamp;
   vaultHistory.createAtBlock = event.block.number;
   vaultHistory.save();
+
+  vault.priceUnderlying = vaultHistory.priceUnderlying;
+  vault.lastSharePrice = sharePrice;
+  vault.save();
 }
 
-function createUserBalance(plasmaVault: PlasmaVault, user: Address, amount: BigInt, timestamp: BigInt, isDeposit: boolean): void {
+function createUserBalance(plasmaVault: PlasmaVault, user: Address, amount: BigInt, timestamp: BigInt, tx: string, block: BigInt, isDeposit: boolean, txOrigin: string): void {
   let userBalance = PlasmaUserBalance.load(stringIdToBytes(plasmaVault.id + '-' + user.toHexString()));
   if (userBalance == null) {
     userBalance = new PlasmaUserBalance(stringIdToBytes(plasmaVault.id + '-' + user.toHexString()));
@@ -203,5 +248,22 @@ function createUserBalance(plasmaVault: PlasmaVault, user: Address, amount: BigI
   userBalanceHistory.value = userBalance.value;
   userBalanceHistory.plasmaVault = plasmaVault.id;
   userBalanceHistory.timestamp = timestamp;
+  userBalanceHistory.tx = tx;
   userBalanceHistory.save();
+
+  const userTransaction = new UserTransaction(Bytes.fromUTF8(`${tx}-${plasmaVault.id}-${isDeposit.toString()}`))
+  userTransaction.createAtBlock = block
+  userTransaction.timestamp = timestamp
+  userTransaction.userAddress = user.toHexString()
+  userTransaction.plasmaVault = plasmaVault.id
+  userTransaction.transactionType = isDeposit
+    ? 'Deposit'
+    : 'Withdraw'
+  userTransaction.sharePrice = plasmaVault.lastSharePrice;
+  userTransaction.tx = tx;
+  userTransaction.value = amount
+  userTransaction.txOrigin = txOrigin;
+  userTransaction.price = plasmaVault.priceUnderlying;
+  userTransaction.save();
 }
+

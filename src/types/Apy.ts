@@ -61,7 +61,7 @@ export function saveApyReward(
   vault.apyReward = apy;
   vault.apy = vault.apyAutoCompound.plus(vault.apyReward)
   vault.save();
-  calculateGeneralApy(vault, timestamp, block);
+  calculateGeneralApy(vault, timestamp, block); 
 }
 
 export function calculateAndSaveApyAutoCompound(id: Bytes, diffSharePrice: BigDecimal, diffTimestamp: BigInt, vault: Vault, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero()): BigDecimal {

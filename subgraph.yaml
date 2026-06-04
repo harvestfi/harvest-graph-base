@@ -1,18 +1,18 @@
 specVersion: 0.0.8
 schema:
   file: ./schema.graphql
-#features:
-#  - grafting # feature name
-#graft:
-#  base: QmWqyXmd5fxEBCqcvTu7Snh4e7yHqWxLpm8Bp71BgLX16E
-#  block: 28384375
+features:
+  - grafting # feature name
+graft:
+  base: Qme9tsZxjX2uXXWkHd4EJQivAm78GgabwuhKJRSU6QcZMk
+  block: 46032174
 dataSources:
   - kind: ethereum
     name: Controller
     network: base
     source:
       address: "0xf90ff0f7c8db52bf1bf869f74226ead125efa745"
-      startBlock: 1441078
+      startBlock: 1441079
       abi: ControllerContract
     mapping:
       kind: ethereum/events
@@ -50,6 +50,10 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
+        - name: VaultV3Contract
+          file: ./abis/VaultV3.json
       eventHandlers:
         - event: SharePriceChangeLog(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleSharePriceChangeLog
@@ -98,6 +102,8 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -148,6 +154,8 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -198,6 +206,60 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
+    name: UsdcPlasmaVault4
+    network: base
+    source:
+      address: "0xd6701905c59EE618dc36DC747506BCE0a4AC760A"
+      abi: PlasmaVaultContract
+      startBlock: 35270313
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -248,6 +310,8 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -298,6 +362,8 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -348,6 +414,8 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -398,6 +466,8 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -448,6 +518,8 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -498,6 +570,60 @@ dataSources:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: MarketBalancesUpdated(uint256[],int256)
+          handler: handleMarketBalancesUpdated
+      file: ./src/PlasmaVaultListener.ts
+  - kind: ethereum
+    name: EurcPlasmaVault1
+    network: base
+    source:
+      address: "0x180493090667a35d8511be743835dad8715d33be"
+      abi: PlasmaVaultContract
+      startBlock: 43002585
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PlasmaVault
+      abis:
+        - name: PlasmaVaultContract
+          file: ./abis/PlasmaVault.json
+        - name: FuseContract
+          file: ./abis/Fuse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: VaultContract
+          file: ./abis/Vault.json
+        - name: WeightedPool2TokensContract
+          file: ./abis/balancer/WeightedPool2Tokens.json
+        - name: BalancerVaultContract
+          file: ./abis/balancer/BalancerVault.json
+        - name: PotPoolContract
+          file: ./abis/harvest/PotPool.json
+        - name: VaultV2Contract
+          file: ./abis/VaultV2.json
+        - name: StrategyBaseContract
+          file: ./abis/StrategyBase.json
+        - name: PancakeFactoryContract
+          file: ./abis/baseswap/PancakeFactory.json
+        - name: PancakePairContract
+          file: ./abis/baseswap/PancakePair.json
+        - name: AedromeFactoryContract
+          file: ./abis/aerodrome/AerodromeFactory.json
+        - name: AedromePoolContract
+          file: ./abis/aerodrome/AerodromePool.json
+        - name: CurveVaultContract
+          file: ./abis/curve/CurveVault.json
+        - name: CurveMinterContract
+          file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -543,6 +669,8 @@ templates:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -585,6 +713,8 @@ templates:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: RewardAdded(address,uint256)
           handler: handleRewardAdded
@@ -629,7 +759,27 @@ templates:
           file: ./abis/curve/CurveVault.json
         - name: CurveMinterContract
           file: ./abis/curve/CurveMinter.json
+        - name: PancakeV3PoolContract
+          file: ./abis/pancake/PancakeV3Pool.json
       eventHandlers:
         - event: ProfitLogInReward(indexed address,uint256,uint256,uint256)
           handler: handleProfitLogInReward
       file: ./src/StrategyListener.ts
+  - kind: ethereum/contract
+    name: VaultV3Listener
+    network: base
+    source:
+      abi: VaultV3Contract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+      abis:
+        - name: VaultV3Contract
+          file: ./abis/VaultV3.json
+      eventHandlers:
+        - event: Rebalanced(uint256,uint256,uint256,uint256,uint256)
+          handler: handleRebalanced
+      file: ./src/VaultListener.ts

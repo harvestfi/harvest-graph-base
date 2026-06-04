@@ -10,9 +10,10 @@ import {
 import { VaultContract } from "../../generated/templates/VaultListener/VaultContract";
 import { ERC20 } from "../../generated/Controller/ERC20";
 import { pow } from "../utils/MathUtils";
-import { BD_TEN, NULL_ADDRESS } from '../utils/Constant';
+import { BD_TEN, BI_1_HOUR, NULL_ADDRESS } from '../utils/Constant';
+import { fetchPricePerFullShare } from '../utils/VaultUtils';
 
-export function createUserBalance(vaultAddress: Address, amount: BigInt, beneficary: Address, isDeposit: boolean, tx: string, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero(), isNull: boolean = false): UserBalance | null {
+export function createUserBalance(vaultAddress: Address, amount: BigInt, beneficary: Address, isDeposit: boolean, tx: string, txOrigin: string, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero(), isNull: boolean = false): UserBalance | null {
   const vault = Vault.load(vaultAddress.toHex())
   if (vault != null) {
     const vaultContract = VaultContract.bind(vaultAddress)
@@ -37,6 +38,13 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
       userBalance.totalDeposit = BigDecimal.zero();
       userBalance.totalWithdraw = BigDecimal.zero();
     }
+
+    // if (vault.lastShareTimestamp.plus(BI_1_HOUR).lt(timestamp)) {
+    //   const sharePrice = fetchPricePerFullShare(vaultAddress)
+    //   vault.lastSharePrice = sharePrice
+    //   vault.lastShareTimestamp = timestamp
+    //   vault.save()
+    // }
 
     const delimiter = pow(BD_TEN, vault.decimal.toI32());
     const sharePriceFormatted = vault.lastSharePrice.divDecimal(delimiter);
@@ -79,6 +87,7 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
     userBalanceHistory.poolBalance = userBalance.poolBalance
     userBalanceHistory.vaultBalance = userBalance.vaultBalance
     userBalanceHistory.priceUnderlying = vault.priceUnderlying
+    userBalanceHistory.tx = tx
 
     userBalanceHistory.sharePrice = vault.lastSharePrice;
     userBalanceHistory.save()
@@ -92,7 +101,10 @@ export function createUserBalance(vaultAddress: Address, amount: BigInt, benefic
       ? 'Deposit'
       : 'Withdraw'
     userTransaction.sharePrice = vault.lastSharePrice;
+    userTransaction.tx = tx;
     userTransaction.value = amount
+    userTransaction.price = vault.priceUnderlying;
+    userTransaction.txOrigin = txOrigin;
     userTransaction.save();
 
     // TODO unused feature

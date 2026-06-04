@@ -6,7 +6,7 @@ import {
   BD_ONE,
   BD_TEN, BD_ZERO,
   BI_18,
-  BI_TEN, BSX, CB_ETH_ETH_POOL, CRV_CRV_USD_POOL,
+  BI_TEN, BSX, CB_BTC, CB_ETH_ETH_POOL, CBBTC_USDC_POOL, CBXRP_USDC_POOL, CRV_CRV_USD_POOL,
   DEFAULT_DECIMAL,
   DEFAULT_PRICE, EURC_BASE, FARM_BASE, FARM_WETH_PRICE,
   getFarmToken, isEuro,
@@ -20,11 +20,11 @@ import { WeightedPool2TokensContract } from "../../generated/templates/VaultList
 import { BalancerVaultContract } from "../../generated/templates/VaultListener/BalancerVaultContract";
 import { ERC20 } from "../../generated/Controller/ERC20";
 import { fetchContractDecimal } from "./ERC20Utils";
-import { pow, powBI } from "./MathUtils";
+import { bdToBI, pow, powBI } from './MathUtils';
 import {
   checkBalancer,
   isBalancer, isBtc, isCurve,
-  isLpUniPair, isWeth,
+  isLpUniPair, isWeth, isXrp,
 } from './PlatformUtils';
 import { PancakeFactoryContract } from '../../generated/Controller/PancakeFactoryContract';
 import { PancakePairContract } from '../../generated/Controller/PancakePairContract';
@@ -33,6 +33,7 @@ import { AedromeFactoryContract } from '../../generated/Controller/AedromeFactor
 import { AedromePoolContract } from '../../generated/Controller/AedromePoolContract';
 import { CurveVaultContract } from '../../generated/Controller/CurveVaultContract';
 import { CurveMinterContract } from '../../generated/Controller/CurveMinterContract';
+import { PancakeV3PoolContract } from '../../generated/Controller/PancakeV3PoolContract';
 
 export function getPriceForCoin(address: Address): BigInt {
 
@@ -53,7 +54,7 @@ export function getPriceForCoin(address: Address): BigInt {
   }
 
   if (isBtc(address.toHex())) {
-    return getPriceForCoinWithSwap(AXL_WBTC_BASE, USDC_BASE, BASE_SWAP_FACTORY)
+    return getPriceForBtcPool();
   }
 
   if (isEuro(tokenAddress.toHex().toLowerCase())) {
@@ -62,6 +63,10 @@ export function getPriceForCoin(address: Address): BigInt {
 
   if (isWeth(tokenAddress.toHex().toLowerCase())) {
     return getPriceForCoinWithSwap(WETH_BASE, USDC_BASE, BASE_SWAP_FACTORY)
+  }
+
+  if (isXrp(tokenAddress.toHex().toLowerCase())) {
+    return getPriceForUniswapV3(CBXRP_USDC_POOL);
   }
 
   let price = getPriceForCoinWithSwap(tokenAddress, USDC_BASE, BASE_SWAP_FACTORY)
@@ -122,10 +127,75 @@ function getPriceForAerodromeV2(tokenA: Address, tokenB: Address, factoryAddress
   // const delimiter0 = powBI(BI_TEN, DEFAULT_DECIMAL - decimal0.toI32());
   // const delimiter1 = powBI(BI_TEN, DEFAULT_DECIMAL - decimal1.toI32());
 
+  if (reserves.get_reserve0().equals(BigInt.zero()) || reserves.get_reserve1().equals(BigInt.zero())) {
+    return BigInt.zero();
+  }
+
   if (tryToken0.value.equals(tokenA)) {
     return reserves.get_reserve0().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal1.toI32() - decimal0.toI32())).div(reserves.get_reserve1())
+    // return reserves.get_reserve1().div(powBI(BI_TEN, decimal1.toI32())).times(powBI(BI_TEN, DEFAULT_DECIMAL)).div(reserves.get_reserve0().div(powBI(BI_TEN, decimal0.toI32())))
   }
   return reserves.get_reserve1().times(powBI(BI_TEN, DEFAULT_DECIMAL + decimal0.toI32() - decimal1.toI32())).div(reserves.get_reserve0())
+  // return reserves.get_reserve0().div(powBI(BI_TEN, decimal0.toI32())).times(powBI(BI_TEN, DEFAULT_DECIMAL)).div(reserves.get_reserve1().div(powBI(BI_TEN, decimal1.toI32())))
+}
+
+function getPriceForBtcPool(): BigInt {
+  const pool = AedromePoolContract.bind(CBBTC_USDC_POOL);
+  const prices = pool.prices(CB_BTC, BigInt.fromI32(100), BigInt.fromString('1'));
+  if (prices.length == 0 || prices[0].equals(BigInt.zero())) {
+    return BigInt.zero();
+  }
+  return prices[0].times(BI_18);
+}
+
+function getPriceForAerodromeV3(tokenA: Address, tokenB: Address, factoryAddress: Address): BigInt {
+  const factory = AedromeFactoryContract.bind(factoryAddress);
+  const tryGetPool = factory.try_getPool1(tokenA, tokenB, false);
+  if (tryGetPool.reverted) {
+    return BigInt.zero();
+  }
+  const pool = AedromePoolContract.bind(tryGetPool.value);
+  const tryToken0 = pool.try_token0();
+  const tryToken1 = pool.try_token1();
+  if (tryToken0.reverted || tryToken1.reverted) {
+    return BigInt.zero();
+  }
+
+  const tryReserves = pool.try_getReserves();
+  if (tryReserves.reverted) {
+    return BigInt.zero();
+  }
+  const reserves = tryReserves.value;
+  const decimal0 = fetchContractDecimal(tryToken0.value);
+  const decimal1 = fetchContractDecimal(tryToken1.value);
+
+  // Check for valid decimals
+  if (decimal0.toI32() < 0 || decimal1.toI32() < 0) {
+    return BigInt.zero();
+  }
+
+  // Check for zero reserves
+  if (reserves.get_reserve0().equals(BigInt.zero()) || reserves.get_reserve1().equals(BigInt.zero())) {
+    return BigInt.zero();
+  }
+
+  // Adjust reserves for decimals
+  const pow0 = powBI(BI_TEN, decimal0.toI32());
+  const pow1 = powBI(BI_TEN, decimal1.toI32());
+  if (pow0.equals(BigInt.zero()) || pow1.equals(BigInt.zero())) {
+    return BigInt.zero();
+  }
+
+  const reserve0Adjusted = reserves.get_reserve0().div(pow0);
+  const reserve1Adjusted = reserves.get_reserve1().div(pow1);
+  if (reserve0Adjusted.equals(BigInt.zero()) || reserve1Adjusted.equals(BigInt.zero())) {
+    return BigInt.zero();
+  }
+
+  if (tryToken0.value.equals(tokenA)) {
+    return reserve1Adjusted.times(powBI(BI_TEN, DEFAULT_DECIMAL)).div(reserve0Adjusted);
+  }
+  return reserve0Adjusted.times(powBI(BI_TEN, DEFAULT_DECIMAL)).div(reserve1Adjusted);
 }
 
 function getPriceForAerodromeFromPool(tokenA: Address, poolAdr: Address): BigInt {
@@ -176,6 +246,21 @@ function getPriceForCoinWithSwap(address: Address, stableCoin: Address, factory:
   const delimiter = powBI(BI_TEN, decimal.toI32() - USDC_DECIMAL + DEFAULT_DECIMAL)
 
   return reserves.get_reserve1().times(delimiter).div(reserves.get_reserve0())
+}
+
+function getPriceForUniswapV3(pool: Address): BigInt {
+  const poolContract = PancakeV3PoolContract.bind(pool)
+  const slot0 = poolContract.try_slot0()
+  if (slot0.reverted) {
+    return DEFAULT_PRICE
+  }
+  const sqrtPriceX96 = slot0.value.getSqrtPriceX96()
+
+  if (sqrtPriceX96.equals(BigInt.zero())) {
+    return DEFAULT_PRICE
+  }
+
+  return bdToBI(BigDecimal.fromString('1').div(pow(sqrtPriceX96.toBigDecimal().div(pow(BigDecimal.fromString('2'), 96)), 2)).times(BD_18));
 }
 
 export function getPriceByVault(vault: Vault, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero()): BigDecimal {
@@ -272,6 +357,9 @@ export function getPriceLpUniPair(underlyingAddress: string): BigDecimal {
   if (token0Price.isZero() || token1Price.isZero()) {
     log.log(log.Level.WARNING, `Some price is zero token0 ${token0.toHex()} = ${token0Price} , token1 ${token1.toHex()} = ${token1Price}`)
     return BigDecimal.zero()
+  }
+  if (true) {
+    
   }
 
   return token0Price

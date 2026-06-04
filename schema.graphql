@@ -30,6 +30,7 @@ type Vault @entity {
   lastShareTimestamp: BigInt!
   lastUsersShareTimestamp: BigInt!
   lastSharePrice: BigInt!
+  lastPriceTimestamp: BigInt
   users: [String!]!
   lastTimestampProcess: BigInt!
   skipFirstApyReward: Boolean
@@ -222,6 +223,7 @@ type UserBalanceHistory @entity(immutable: true) {
   sharePrice: BigInt!
   timestamp: BigInt!
   createAtBlock: BigInt!
+  tx: String!
 }
 
 type UserTotalProfit @entity {
@@ -259,10 +261,14 @@ type UserTransaction @entity(immutable: true) {
   id: Bytes!
   userAddress: String!
   transactionType: TransactionType!
-  vault: Vault!
+  vault: Vault
+  plasmaVault: PlasmaVault
   "Amount in transaction"
   value: BigInt!
   sharePrice: BigInt!
+  tx: String!
+  price: BigDecimal!
+  txOrigin: String!
   timestamp: BigInt!
   createAtBlock: BigInt!
 }
@@ -359,6 +365,7 @@ type PlasmaVault @entity {
 
   tvl: BigDecimal!
   apy: BigDecimal!
+  apy_7d: BigDecimal
   historySequenceId: BigInt!
 
   assetOld: BigDecimal!
@@ -366,8 +373,19 @@ type PlasmaVault @entity {
   allocDatas: [BigDecimal!]!
   newAllocDatas: [BigDecimal!]!
 
+  lastSharePrice: BigInt!
+  priceUnderlying: BigDecimal!
+
   timestamp: BigInt!
   createAtBlock: BigInt!
+}
+
+type PlasmaVaultDailySnapshot @entity {
+  id: ID! # vaultId-timestamp
+  apy: [BigDecimal!]!
+  vault: PlasmaVault
+  sharePrice: BigInt
+  timestamp: BigInt!
 }
 
 type PlasmaVaultHistory @entity(immutable: true) {
@@ -402,5 +420,16 @@ type PlasmaUserBalanceHistory @entity(immutable: true) {
   userAddress: String!
   plasmaVault: PlasmaVault!
   value: BigDecimal!
+  timestamp: BigInt!
+  tx: String!
+}
+
+type VaultRebalance @entity(immutable: true) {
+  id: Bytes!
+  vault: Vault!
+  oldPosId: BigInt!
+  newPosId: BigInt!
+  oldLiquidity: BigInt!
+  newLiquidity: BigInt!
   timestamp: BigInt!
 }

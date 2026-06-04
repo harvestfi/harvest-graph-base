@@ -1,12 +1,13 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { fetchContractDecimal, fetchContractName, fetchContractSymbol } from "../utils/ERC20Utils";
 import { loadOrCreateERC20Token } from "./Token";
-import { VaultListener } from "../../generated/templates";
+import { VaultListener, VaultV3Listener } from "../../generated/templates";
 import { loadOrCreateStrategy } from "./Strategy";
 import { fetchUnderlyingAddress } from "../utils/VaultUtils";
 import { Vault } from '../../generated/schema';
 import { BI_TEN } from '../utils/Constant';
 import { powBI } from '../utils/MathUtils';
+
 
 export function loadOrCreateVault(vaultVal: string, timestamp: BigInt = BigInt.zero(), block: BigInt = BigInt.zero(), strategyAddress: string = 'unknown'): Vault {
   let vault = Vault.load(vaultVal)
@@ -41,7 +42,8 @@ export function loadOrCreateVault(vaultVal: string, timestamp: BigInt = BigInt.z
     vault.lastTimestampProcess = BigInt.zero();
     vault.lastUsersShareTimestamp = BigInt.zero();
     vault.save();
-    VaultListener.create(vaultAddress)
+    VaultListener.create(vaultAddress);
+    VaultV3Listener.create(vaultAddress);
   }
 
   return vault;
