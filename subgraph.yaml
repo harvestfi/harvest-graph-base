@@ -3,9 +3,9 @@ schema:
   file: ./schema.graphql
 features:
   - grafting # feature name
-graft:
-  base: Qme9tsZxjX2uXXWkHd4EJQivAm78GgabwuhKJRSU6QcZMk
-  block: 46032174
+# graft:
+#   base: QmNqNob3q8iYgtsswdeDFnHeFKW7gsesG3REJd2KspzecF
+#   block: 34675600
 dataSources:
   - kind: ethereum
     name: Controller
@@ -57,6 +57,11 @@ dataSources:
       eventHandlers:
         - event: SharePriceChangeLog(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleSharePriceChangeLog
+      blockHandlers:
+        - handler: handleBlock
+          filter:
+            kind: polling
+            every: 86440
       file: ./src/ControllerListener.ts
   - kind: ethereum
     name: UsdcPlasmaVault

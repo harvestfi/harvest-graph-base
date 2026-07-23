@@ -51,6 +51,7 @@ export function createTvl(address: Address, timestamp: BigInt = BigInt.zero(), b
       createTotalTvl(vault.tvl, tvl.value, timestamp, block)
       vault.tvl = tvl.value
       vault.tvlSequenceId = vault.tvlSequenceId + 1;
+      vault.lastTotalSupply = tvl.totalSupply
       vault.save()
     }
 

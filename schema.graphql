@@ -34,6 +34,11 @@ type Vault @entity {
   users: [String!]!
   lastTimestampProcess: BigInt!
   skipFirstApyReward: Boolean
+  lastTotalSupply: BigInt
+  lastApr: BigDecimal
+  lastDiffTimestamp: BigDecimal
+  lastDiffSharePrice: BigDecimal
+  lastVaultSnapshotTs: BigInt
 }
 
 type PriceHistory @entity(immutable: true) {
@@ -432,4 +437,11 @@ type VaultRebalance @entity(immutable: true) {
   oldLiquidity: BigInt!
   newLiquidity: BigInt!
   timestamp: BigInt!
+}
+
+type VaultUtil @entity {
+  id: ID!
+  vaults: [Vault!]!
+  vaultLength: Int!
+  lastBlockPrice: BigInt!
 }

@@ -7,7 +7,6 @@ import { Transfer } from '../generated/Controller/VaultContract';
 import { Rebalanced } from '../generated/Controller/VaultV3Contract'
 import { NULL_ADDRESS, PORTAL_MULTI_CALL } from './utils/Constant';
 import { VaultRebalance } from "../generated/schema";
-import { Bytes } from "@graphprotocol/graph-ts";
 
 export function handleTransfer(event: Transfer): void {
   const to = event.params.to
@@ -23,7 +22,7 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleRebalanced(event: Rebalanced): void {
-  const id = Bytes.fromHexString(`${event.address.toHexString()}-${event.block.timestamp}-${event.logIndex}`);
+  const id = event.transaction.hash.concatI32(event.logIndex.toI32());
   let vaultRebalance = VaultRebalance.load(id);
   if (!vaultRebalance) {
     vaultRebalance = new VaultRebalance(id);

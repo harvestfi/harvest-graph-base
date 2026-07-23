@@ -5,8 +5,8 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "test": "graph test",
-    "deploy-studio": "graph codegen && graph build && graph deploy --studio -l v0.0.70 harvest-base && npm run after-deploy",
-    "deploy-studio-without-status": "graph codegen && graph build && graph deploy --studio -l v0.2.0 harvest-base",
+    "deploy-studio": "graph codegen && graph build && graph deploy --studio -l v0.0.74 harvest-base && npm run after-deploy",
+    "deploy-studio-without-status": "graph codegen && graph build && graph deploy --studio -l v0.2.7 harvest-base",
     "deploy-optimize": "graph deploy --studio -l v0.0.67 harvest-base-optimize",
     "deploy-test-stage-studio": "graph codegen && graph build && graph deploy --studio -l v0.1.8 l2-base",
     "after-deploy": "./deploy.sh"

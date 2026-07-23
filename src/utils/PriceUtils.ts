@@ -141,7 +141,11 @@ function getPriceForAerodromeV2(tokenA: Address, tokenB: Address, factoryAddress
 
 function getPriceForBtcPool(): BigInt {
   const pool = AedromePoolContract.bind(CBBTC_USDC_POOL);
-  const prices = pool.prices(CB_BTC, BigInt.fromI32(100), BigInt.fromString('1'));
+  const tryPrices = pool.try_prices(CB_BTC, BigInt.fromI32(100), BigInt.fromString('1'));
+  if (tryPrices.reverted) {
+    return BigInt.zero();
+  }
+  const prices = tryPrices.value;
   if (prices.length == 0 || prices[0].equals(BigInt.zero())) {
     return BigInt.zero();
   }
