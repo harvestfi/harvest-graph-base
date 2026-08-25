@@ -1,6 +1,6 @@
 import { BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 
-export function pow(value: BigDecimal, scale: number): BigDecimal {
+export function pow(value: BigDecimal, scale: i32): BigDecimal {
   let tempValue = value
   for (let i=0;i<scale-1;i++) {
     if (!canPowNext(tempValue.toString())) {
@@ -12,7 +12,7 @@ export function pow(value: BigDecimal, scale: number): BigDecimal {
   return tempValue
 }
 
-export function powBI(value: BigInt, scale: number): BigInt {
+export function powBI(value: BigInt, scale: i32): BigInt {
   let tempValue = value
   for (let i=0;i<scale-1;i++) {
     tempValue = tempValue.times(value)
