@@ -3,12 +3,13 @@ import { ERC20, Transfer } from '../generated/Controller/ERC20';
 import { Address, BigDecimal, BigInt, Bytes, log } from '@graphprotocol/graph-ts';
 import { loadOrCreateVault } from './types/Vault';
 import { getPriceForCoin } from './utils/PriceUtils';
-import { BD_18, BD_ONE, BD_ONE_HUNDRED, BD_TEN, BD_ZERO, EVERY_24_HOURS } from './utils/Constant';
-import { bdToBI, pow } from './utils/MathUtils';
+import { BD_18, BD_ONE_HUNDRED, BD_TEN, BD_ZERO, BI_TEN } from './utils/Constant';
+import { pow, powBI } from './utils/MathUtils';
 import { formatTimestamp, stringIdToBytes } from './utils/IdUtils';
 import { MarketBalancesUpdated, PlasmaVaultContract } from '../generated/UsdcPlasmaVault/PlasmaVaultContract';
 import { FuseContract } from '../generated/UsdcPlasmaVault/FuseContract';
 import { createTotalTvl } from './types/Tvl';
+import { calculateSharePrice, loadRealizedApy7d } from './utils/PlasmaVaultApyUtils';
 
 export function handleTransfer(event: Transfer): void {
   const vaultContract = PlasmaVaultContract.bind(event.address);
@@ -110,10 +111,17 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
   const newAllocDatas: BigDecimal[] = [];
 
   const fuses = vaultContract.getInstantWithdrawalFuses();
-  let underlyingDecimal = 18;
+  const underlyingDecimal = ERC20.bind(vaultContract.asset()).decimals();
   for (let i = 0; i < fuses.length; i++) {
     const fuseContract = FuseContract.bind(fuses[i]);
     const marketId = fuseContract.MARKET_ID();
+    const substratesCall = vaultContract.try_getMarketSubstrates(marketId);
+    if (substratesCall.reverted) {
+      continue;
+    }
+    if (substratesCall.value.length == 0) {
+      continue;
+    }
     // TODO change logic
     const pVaultTemp = vaultContract.getInstantWithdrawalFusesParams(fuses[i], BigInt.fromI32(i))[1].toHexString().slice(26)
 
@@ -134,22 +142,15 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
     if (hVault != null) {
       log.log(log.Level.INFO, `Vault ${pVault} found, market id ${marketId.toString()}`);
       const marketInAssetOnchain = vaultContract.totalAssetsInMarket(marketId).toBigDecimal();
-      // TODO check decimal value, was vault.decimals
-      const marketInAsset = marketInAssetOnchain.div(pow(BD_TEN, hVault.decimal.toI32()));
+      const marketInAsset = marketInAssetOnchain.div(pow(BD_TEN, underlyingDecimal));
       assetOld = assetOld.plus(marketInAsset);
-      let apy = hVault.apy;
-      // TODO if big APY, set to 1
-      if (apy.gt(BigDecimal.fromString('100'))) {
-        log.log(log.Level.WARNING, `APY is too big ${apy.toString()}, hVault ${hVault.id} vault ${vault.id}`);
-        apy = BigDecimal.fromString('1');
-      }
+      const apy = hVault.apy;
       const tempAssetNew = marketInAsset.times(BD_ONE_HUNDRED.plus(apy));
       log.log(log.Level.INFO, `asset ${tempAssetNew.toString()}, apy ${apy.toString()}`);
       if (tempAssetNew.gt(BD_ZERO)) {
         assetNew = assetNew.plus(tempAssetNew.div(BD_ONE_HUNDRED));
       }
       allocDatas.push(marketInAsset);
-      underlyingDecimal = hVault.decimal.toI32();
     } else {
       log.log(log.Level.WARNING, `Can not find vault ${pVault}`);
     }
@@ -163,17 +164,12 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
     }
   }
 
-  let apy = BigDecimal.zero();
-  if (assetOld.gt(BD_ZERO)) {
-    apy = assetNew.minus(assetOld).div(assetOld).times(BD_ONE_HUNDRED);
-  }
-
-  const sharePrice = bdToBI(
-    vaultContract.totalAssets().
-    divDecimal(pow(BD_TEN, underlyingDecimal))
-      .div(vaultContract.totalSupply().divDecimal(pow(BD_TEN, vault.decimals)))
-      .times(pow(BD_TEN, underlyingDecimal))
-  );
+  const oneShare = powBI(BI_TEN, vault.decimals);
+  const convertToAssetsCall = vaultContract.try_convertToAssets(oneShare);
+  const totalSupply = vaultContract.totalSupply();
+  const sharePrice = convertToAssetsCall.reverted
+    ? calculateSharePrice(vaultContract.totalAssets(), totalSupply, oneShare)
+    : convertToAssetsCall.value;
 
   
   const currentDate = formatTimestamp(event.block.timestamp);
@@ -187,26 +183,21 @@ export function handleMarketBalancesUpdated(event: MarketBalancesUpdated): void 
     vaultDailySnapshot.timestamp = event.block.timestamp;
     vaultDailySnapshot.save();
   }
-  let oldSharePrice: BigInt | null = BigInt.zero();
-
-  for (let i = 7; i > 0; i--) {
-    const tempDate = formatTimestamp(event.block.timestamp.minus(BigInt.fromI32(i * EVERY_24_HOURS)));
-    const tempId = `${vault.id}-${tempDate}`;
-    const tempVaultDailySnapshot = PlasmaVaultDailySnapshot.load(tempId);
-    if (tempVaultDailySnapshot != null && tempVaultDailySnapshot.sharePrice) {
-      oldSharePrice = tempVaultDailySnapshot.sharePrice;
-      break;
-    }
+  let feeInPercentage: i32 = 0;
+  const managementFeeCall = vaultContract.try_getManagementFeeData();
+  if (!managementFeeCall.reverted) {
+    feeInPercentage = managementFeeCall.value.feeInPercentage;
   }
 
-  if (oldSharePrice!.gt(BigInt.zero())) {
-    vault.apy_7d = pow(BD_ONE.plus(sharePrice.divDecimal(oldSharePrice!.toBigDecimal())).minus(BD_ONE), 365/7).minus(BD_ONE).times(BD_ONE_HUNDRED);
+  const realizedApy = loadRealizedApy7d(vault.id, sharePrice, event.block.timestamp, feeInPercentage);
+  if (realizedApy) {
+    vault.apy_7d = realizedApy;
+    vault.apy = realizedApy;
   }
 
   vault.historySequenceId = vault.historySequenceId.plus(BigInt.fromI32(1));
   vault.assetOld = assetOld;
   vault.assetNew = assetNew;
-  vault.apy = apy;
   vault.allocDatas = allocDatas;
   vault.newAllocDatas = newAllocDatas;
 
